@@ -1,0 +1,8 @@
+[
+    {
+      "origin": ["https://default-dot-${CODE_PROJECT_NAME}.appspot.com", "https://${GAE_VERSION}-dot-default-dot-${CODE_PROJECT_NAME}.appspot.com", "https://storage.googleapis.com"],
+      "responseHeader": ["Content-Type"],
+      "method": ["GET", "HEAD", "DELETE"],
+      "maxAgeSeconds": 3600
+    }
+]
