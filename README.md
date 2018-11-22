@@ -19,11 +19,18 @@ This template has also support for Docker and is also optimized for Google App E
 ## How to install
 
 ```
+$ conda create -n my_project pip python=3.7
+$ conda activate my_project
+
+$ pip install django>=2
+
 $ django-admin.py startproject \
-  --template=https://github.com/jpadilla/django-project-template/archive/master.zip \
+  --template=https://github.com/preseries/davinci-crawling-template-project/archive/master.zip \
   --name=Procfile \
   --extension=py,md,env \
-  bovespa
-$ mv example.env .env
-$ pipenv install --dev```
+  my_project
+  
+$ cd my_project
+
+$ python setup.py develop
 ```

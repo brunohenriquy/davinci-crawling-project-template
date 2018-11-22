@@ -21,7 +21,7 @@ def get_version(package):
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-version = get_version('davinci_crawling')
+version = get_version('{{ project_name }}')
 
 
 if sys.argv[-1] == 'publish':
@@ -35,16 +35,16 @@ if sys.argv[-1] == 'publish':
     print("  git push --tags")
     shutil.rmtree('dist')
     shutil.rmtree('build')
-    shutil.rmtree('django-davinci-crawling.egg-info')
+    shutil.rmtree('davinci-crawler-{{ project_name }}.egg-info')
     sys.exit()
 
 
 setup(
-    name='django-davinci-crawling',
+    name='davinci-crawler-{{ project_name }}',
     version=version,
     url='http://www.preseries.com',
     license='MIT',
-    description='Django DaVinci Crawling Project.',
+    description='Django DaVinci Crawler Project.',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
     author='Javier Alperte',
