@@ -100,7 +100,7 @@ INSTALLED_APPS = [
     'caravaggio_rest_api',
     'davinci_crawling',
     'davinci_crawling.example.bovespa',
-    '{{ project_name }}'
+    'davinci_crawler_{{ project_name }}'
 ]
 
 MIDDLEWARE = [
@@ -123,7 +123,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'davinci_crawling/templates'),
+            os.path.join(BASE_DIR,
+                         'davinci_crawler_{{ project_name }}/templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -194,12 +195,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'bovespa': {
-            'handlers': ['console', 'mail_admins'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        '{{ project_name }}': {
+        'davinci_crawler_{{ project_name }}': {
             'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
