@@ -25,18 +25,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = values.SecretValue(
-    os.getenv(
-        "SECRET_KEY",
-        "2w=es4^%3i4n2cya(0)ws&bq+@h)m1nepzkvd&pi+wvgsue%ms"))
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "2w=es4^%3i4n2cya(0)ws&bq+@h)m1nepzkvd&pi+wvgsue%ms")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = values.BooleanValue(os.getenv("DEBUG", "True") == "True")
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ADMINS = values.TupleValue(
-    (
-    # ('Your Name', 'your_email@example.com'),
-    ))
+ADMINS = (
+        # ('Your Name', 'your_email@example.com'),
+    )
 
 MANAGERS = ADMINS
 
@@ -100,7 +97,7 @@ INSTALLED_APPS = [
     'caravaggio_rest_api',
     'davinci_crawling',
     'davinci_crawling.example.bovespa',
-    'davinci_crawler_{{ project_name }}'
+    '{{ project_name }}'
 ]
 
 MIDDLEWARE = [
@@ -396,9 +393,15 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS':
         ('drf_haystack.filters.HaystackFilter',
          'drf_haystack.filters.HaystackBoostFilter',
-         'drf_haystack.filters.HaystackOrderingFilter',),
+         'caravaggio_rest_api.drf_haystack.filters.HaystackOrderingFilter',),
 
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+
+    'ORDERING_PARAM': 'order_by',
+
+    # https://www.django-rest-framework.org/api-guide/fields/#decimalfield
+    # To use decimal as representation by default
+    'COERCE_DECIMAL_TO_STRING': False
 }
 
 SESSION_ENGINE = 'django_cassandra_engine.sessions.backends.db'
@@ -460,7 +463,9 @@ HAYSTACK_ADMIN_URL = os.getenv(
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'caravaggio_rest_api.solr.CassandraSolrEngine',
+        'ENGINE':
+            'caravaggio_rest_api.haystack.backends.'
+            'solr_backend.CassandraSolrEngine',
         'URL': HAYSTACK_URL,
         'KEYSPACE': HAYSTACK_KEYSPACE,
         'ADMIN_URL': HAYSTACK_ADMIN_URL,

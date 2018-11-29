@@ -5,8 +5,8 @@
 from django.apps import AppConfig
 
 
-class DaVinciCrawler{{ project_name }}Config(AppConfig):
-    name = 'davinci_crawler_{{ project_name }}'
+class DaVinciCrawlerConfig(AppConfig):
+    name = '{{ project_name }}'
     verbose_name = "Django DaVinci Crawler {{ project_name }}"
 
     def ready(self):

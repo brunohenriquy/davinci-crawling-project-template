@@ -54,11 +54,13 @@ setup(
     install_requires=[
         'psycopg2-binary>=2.7.5',
         # 'cassandra-driver>=3.15.0',
+        'python-dateutil>=2.7.5',
+        'solrq>=1.1.0',
         'gunicorn>=19.9.0',
         'dse-driver>=2.6',
         'django-debug-toolbar==1.10.1',
         'django-extensions==2.1.3',
-        'django-davinci-crawling==0.1.0'],
+        'django-davinci-crawling==0.1.3'],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     zip_safe=False,
     classifiers=[
@@ -82,7 +84,7 @@ setup(
     ],
     dependency_links=[
         "https://github.com/preseries/django-davinci-crawling/tarball/"
-        "0.1.0#egg=django-davinci-crawling-0.1.0"
+        "0.1.3#egg=django-davinci-crawling-0.1.3"
     ],
 )
 

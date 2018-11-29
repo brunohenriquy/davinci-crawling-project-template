@@ -3,7 +3,7 @@
 
 import logging
 from datetime import datetime
-from uuid import uuid
+import uuid
 
 from caravaggio_rest_api.dse_models import CustomDjangoCassandraModel
 from django.db.models.signals import pre_save
@@ -24,7 +24,7 @@ SITUATION_GRANTED = "GRANTED"
 SITUATIONS = [SITUATION_CANCELLED, SITUATION_GRANTED]
 
 
-class {{ project_name }}Resource(CustomDjangoCassandraModel):
+class {{ project_name|capfirst }}Resource(CustomDjangoCassandraModel):
 
     __table_name__ = "{{ project_name }}_resource"
 
@@ -38,6 +38,8 @@ class {{ project_name }}Resource(CustomDjangoCassandraModel):
     # Controls if the entity is active or has been deleted
     is_deleted = columns.Boolean(default=False)
     deleted_reason = columns.Text()
+
+    crawl_param = columns.Integer(required=True)
 
     name = columns.Text(required=True)
 
@@ -60,7 +62,7 @@ class {{ project_name }}Resource(CustomDjangoCassandraModel):
 
 
 # We need to set the new value for the changed_at field
-@receiver(pre_save, sender={{ project_name }}Resource)
-def pre_save_{{ project_name }}_resource(
+@receiver(pre_save, sender={{ project_name|capfirst }}Resource)
+def pre_save_{{ project_name|lower }}_resource(
         sender, instance=None, using=None, update_fields=None, **kwargs):
     instance.updated_at = datetime.utcnow()

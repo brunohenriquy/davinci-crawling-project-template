@@ -14,20 +14,20 @@ export SECURE_SSL_REDIRECT="False"
 export GOOGLE_ANALYTICS_ID=
 
 export DB_HOST=127.0.0.1
-export DB_PORT=3306
-export DB_NAME=caravaggio
-export DB_USER=caravaggio
-export DB_PASS=caravaggio
+export DB_PORT=6543
+export DB_NAME={{ project_name }}
+export DB_USER={{ project_name }}
+export DB_PASS={{ project_name }}
 
 export CASSANDRA_DB_HOST=127.0.0.1,127.0.0.2,127.0.0.3
-export CASSANDRA_DB_NAME=caravaggio
-export CASSANDRA_DB_USER=caravaggio
-export CASSANDRA_DB_PASSWORD=caravaggio
+export CASSANDRA_DB_NAME={{ project_name }}
+export CASSANDRA_DB_USER={{ project_name }}
+export CASSANDRA_DB_PASSWORD={{ project_name }}
 export CASSANDRA_DB_STRATEGY=SimpleStrategy
 export CASSANDRA_DB_REPLICATION=1
 
 export HAYSTACK_ACTIVE=True
-export HAYSTACK_KEYSPACE=caravaggio
+export HAYSTACK_KEYSPACE={{ project_name }}
 export HAYSTACK_URL=http://127.0.0.1:8983/solr
 export HAYSTACK_ADMIN_URL=http://127.0.0.1:8983/solr/admin/cores
 
