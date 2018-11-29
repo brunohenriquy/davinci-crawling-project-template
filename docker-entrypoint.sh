@@ -18,27 +18,5 @@ sed -e "s/\${DB_USER}/$DB_USER/" \
 # Start the pgbouncer pool in local
 pgbouncer -d -u pgbouncer `pwd`/conf/gae_pgbouncer.ini
 
-# Start Gunicorn processes
-echo Starting Gunicorn.
-
 # Start WSGI server
-gunicorn --config {{ project_name }}/gunicorn.conf.py {{ project_name }}.wsgi -b :8000
-
-# Wait 2 second until gunicorn has started all its workers
-sleep 2
-
-# Get the number of gunicorn processes started
-WORKERS=`ps aux | grep gunicorn | wc -l`
-
-echo "Starting Daphne Workers (${WORKERS})."
-# Start Daphne WORKERS
-for i in $(seq 0 $((WORKERS-2))); do python manage.py runworker --settings {{ project_name }}.settings channels & done
-
-echo Starting Nginx server
-# Start nginx
-nginx -c `pwd`/conf/gae_prod_nginx.conf
-
-echo Starting Daphne server
-# Start Daphne
-daphne sky.asgi:application -p 9000 -b 0.0.0.0
 gunicorn -b :$PORT -c {{ project_name }}/gunicorn.conf.py {{ project_name }}.wsgi

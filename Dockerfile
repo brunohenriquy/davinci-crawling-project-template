@@ -54,7 +54,7 @@ RUN apt-get update && apt-get install -yq \
 COPY conf/gae_prod_nginx.conf /etc/nginx/nginx.conf
 
 # create log dir configured in nginx.conf
-RUN mkdir -p /var/log/caravaggio
+RUN mkdir -p /var/log/{{ project_name }}
 
 # Create a simple file to handle heath checks. Health checking can be disabled
 # in app.yaml, but is highly recommended. Google App Engine will send an HTTP
