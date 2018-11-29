@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*
 from drf_haystack.filters import HaystackFilter, HaystackBoostFilter, \
-    HaystackOrderingFilter, HaystackGEOSpatialFilter, HaystackFacetFilter
+    HaystackGEOSpatialFilter, HaystackFacetFilter
 
-from caravaggio_rest_api.drf_viewsets import \
+from caravaggio_rest_api.drf_haystack.filters import \
+    HaystackOrderingFilter
+
+from caravaggio_rest_api.drf_haystack.viewsets import \
     CustomModelViewSet, CustomHaystackViewSet
+
 
 # from rest_framework.authentication import \
 #    TokenAuthentication, SessionAuthentication
@@ -12,13 +16,14 @@ from caravaggio_rest_api.drf_viewsets import \
 from drf_haystack import mixins
 
 from .serializers import {{ project_name|capfirst }}ResourceSerializerV1, \
-    {{project_name | capfirst}}ResourceSearchSerializerV1
+    {{ project_name | capfirst}}ResourceSearchSerializerV1, \
+    {{ project_name | capfirst}}ResourceFacetSerializerV1
 
-from davinci_crawling.example.bovespa.models import {{project_name | capfirst}}Resource
+from {{ project_name }}.models import {{project_name | capfirst}}Resource
 
 
 class BovespaCompanyViewSet(CustomModelViewSet):
-    queryset = {{project_name | capfirst}}Resource.objects.all()
+    queryset = {{ project_name | capfirst}}Resource.objects.all()
 
     # Defined in the settings as default authentication classes
     # authentication_classes = (

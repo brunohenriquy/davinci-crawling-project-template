@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 import uuid
 
-from caravaggio_rest_api.dse_models import CustomDjangoCassandraModel
+from caravaggio_rest_api.dse.models import CustomDjangoCassandraModel
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 

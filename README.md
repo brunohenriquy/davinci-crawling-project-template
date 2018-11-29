@@ -52,9 +52,20 @@ $ cd my_project
 $ python setup.py develop
 ```
 
-After create the project skeleton, we will need to populate the databases, the default and the cassandra databases.
+__NOTE__: by default we are using the `dse-driver` to connect to cassandra or DataStax Enterprise. If you want to use `cassandra-driver` edit `setup.py` and change the dependency.
 
-Check the following [documentation](https://github.com/preseries/django-caravaggio-rest-api/blob/master/docs/local_environment.md) to know how to setup your DB environment.
+__NOTE__: the installation of the dependencies will take some time because the `dse-driver` or `cassandra-driver` has to be compiled.
+
+
+### Setup the databases
+
+Follow the instructions [here](https://github.com/preseries/django-caravaggio-rest-api/blob/master/docs/local_environment.md) to prepare your backend for development.
+
+In this step we are going to populate the databases and its tables. The default database is a PostgreSQL (you can change it) and then we also have the cassandra database, that can be a Cassandra or DSE server.
+
+You can change the SQL server editing the dependencies in the `setup.py` and changing the `psycopg2-binary` library by the one that contains the drivers to connect to your backend. You should configure the connection in the `DATABASES` parameter of the `settings.py` of the project. 
+
+Once the database services are ready, we can populate the database and its tables running the following instruction:
 
 ```
 $ python manage.py migrate
@@ -83,7 +94,7 @@ Running migrations:
   Applying sessions.0001_initial... OK
 ```
 
-Now we can create the DSE model
+Populate the DataStax Enterprise (DSE) or Cassandra database:
 
 ```
 $ python manage.py sync_cassandra
@@ -91,6 +102,17 @@ $ python manage.py sync_cassandra
 Creating keyspace caravaggio [CONNECTION cassandra] ..
 Syncing example.models.ExampleModel
 ```
+
+Populate the DataStax Enterprise (DSE) search indexes. This feature is only available for a DSE configuration:
+
+```
+$ python manage.py sync_indexes
+
+Creating keyspace caravaggio [CONNECTION cassandra] ..
+Syncing example.models.ExampleModel
+```
+
+### Setup the admin user
 
 Let's create the admin user with its own auth token
 
@@ -131,7 +153,11 @@ Before start the crawler we need to have ready the responses for the following q
 After responde these questions we are ready to run the crawler: 
 
 ```
-python manage.py crawl my_crawler -v 0 --workers-num 10 --phantomjs-path /servers/phantomjs-2.1.1-macosx/bin/phantomjs  --io-gs-project centering-badge-212119 --cache-dir "gs://my_crawler_cache" --local-dir "fs:///data/my_crawler/local"
+python manage.py crawl my_crawler \
+    --workers-num 10 \
+    --phantomjs-path /servers/phantomjs-2.1.1-macosx/bin/phantomjs \
+    --io-gs-project centering-badge-212119 \
+    --cache-dir "gs://my_crawler_cache" \
+    --local-dir "fs:///data/my_crawler/local"
 ```
 
-python manage.py crawl my_project2 -v 0 --workers-num 10 --phantomjs-path /accounts/PreSeries/servers/phantomjs-2.1.1-macosx/bin/phantomjs  --io-gs-project centering-badge-212119 --cache-dir "gs://my_project2_cache" --local-dir "fs:///data/my_project2/local"

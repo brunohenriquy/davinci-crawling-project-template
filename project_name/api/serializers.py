@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
 
-from caravaggio_rest_api.serializers import \
+from caravaggio_rest_api.drf_haystack.serializers import \
     BaseCachedSerializerMixin, CustomHaystackSerializer
 from drf_haystack.serializers import HaystackFacetSerializer
 
@@ -10,15 +10,15 @@ from rest_framework import fields, serializers
 
 from rest_framework_cache.registry import cache_registry
 
-from caravaggio_rest_api import serializers as dse_serializers
+from caravaggio_rest_api.drf_haystack import serializers as dse_serializers
 
-from davinci_crawling.example.bovespa.models import \
-    BovespaCompany, BovespaCompanyFile, BovespaAccount
-from davinci_crawling.example.bovespa.search_indexes import \
-    BovespaCompanyIndex, BovespaCompanyFileIndex, BovespaAccountIndex
+from {{ project_name }}.models import \
+    {{project_name | capfirst}}Resource
+from {{ project_name }}.search_indexes import \
+    {{ project_name | capfirst}}ResourceIndex
 
 
-class {{ project_name|capfirst }}SerializerV1(
+class {{ project_name|capfirst }}ResourceSerializerV1(
     dse_serializers.CassandraModelSerializer, BaseCachedSerializerMixin):
     """
     Represents a Business Object API View with support for JSON, list, and map
@@ -34,7 +34,7 @@ class {{ project_name|capfirst }}SerializerV1(
         read_only_fields = ("_id", "created_at", "updated_at")
 
 
-class {{ project_name|capfirst }}SearchSerializerV1(
+class {{ project_name|capfirst }}ResourceSearchSerializerV1(
     CustomHaystackSerializer, BaseCachedSerializerMixin):
     """
     A Fast Searcher (Solr) version of the original Business Object API View

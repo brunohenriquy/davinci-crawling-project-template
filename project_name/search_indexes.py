@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from haystack import indexes
 
-from caravaggio_rest_api.indexes import BaseSearchIndex
+from caravaggio_rest_api.haystack.indexes import BaseSearchIndex
 
 from {{ project_name }} import CRAWLER_NAME
 from .models import {{ project_name|capfirst }}Resource

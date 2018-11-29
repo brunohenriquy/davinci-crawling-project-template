@@ -53,11 +53,11 @@ setup(
     include_package_data=True,
     install_requires=[
         'psycopg2-binary>=2.7.5',
-        # 'cassandra-driver>=3.15.0',
         'python-dateutil>=2.7.5',
         'solrq>=1.1.0',
         'gunicorn>=19.9.0',
         'dse-driver>=2.6',
+        # 'cassandra-driver>=3.15.0',
         'django-debug-toolbar==1.10.1',
         'django-extensions==2.1.3',
         'django-davinci-crawling==0.1.2'],
