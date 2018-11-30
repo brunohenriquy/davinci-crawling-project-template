@@ -36,8 +36,8 @@ Once the previous services are ready, we can proceed with the installation.
 Follow the next instructions to create a new crawler based on this project template:
 
 ```
-$ conda create -n my_project pip python=3.7
-$ conda activate my_project
+$ conda create -n myproject pip python=3.7
+$ conda activate myproject
 
 $ pip install django>=2
 
@@ -45,9 +45,9 @@ $ django-admin.py startproject \
   --template=https://github.com/preseries/davinci-crawling-template-project/archive/master.zip \
   --name=Dockerfile \
   --extension=py,md,env,sh,template,yamltemplate \
-  er
+  myproject
   
-$ cd my_project
+$ cd myproject
 
 $ python setup.py develop
 ```
@@ -55,6 +55,43 @@ $ python setup.py develop
 __NOTE__: by default we are using the `dse-driver` to connect to cassandra or DataStax Enterprise. If you want to use `cassandra-driver` edit `setup.py` and change the dependency.
 
 __NOTE__: the installation of the dependencies will take some time because the `dse-driver` or `cassandra-driver` has to be compiled.
+
+
+### Test crawler
+
+If you want to use the Bovespa test crawler that comes with `davinci-crawling`, you should edit the `settings.py file and add davinci_crawling.example.bovespa` to the list of `INSTALLED_APPS`, just after the `davinci_crawling` application.
+
+```python
+# Application definition
+INSTALLED_APPS = [
+    'django_cassandra_engine',
+    'django_cassandra_engine.sessions',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    # 'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # Uncomment the next line to enable the admin:
+    'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    'django.contrib.admindocs',
+
+    'django_extensions',
+    'debug_toolbar',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_cache',
+    'rest_framework_swagger',
+
+    'haystack',
+    'caravaggio_rest_api',
+    'davinci_crawling',
+    'davinci_crawling.example.bovespa',
+    'myproject'
+]
+```
 
 
 ### Setup the databases
@@ -71,12 +108,10 @@ Once the database services are ready, we can populate the database and its table
 $ python manage.py migrate
 
 Operations to perform:
-  Apply all migrations: admin, auth, authtoken, contenttypes, sessions
+  Apply all migrations: admin, auth, authtoken, contenttypes, sites
 Running migrations:
   Applying contenttypes.0001_initial... OK
   Applying auth.0001_initial... OK
-  Applying authtoken.0001_initial... OK
-  Applying authtoken.0002_auto_20160226_1747... OK  
   Applying admin.0001_initial... OK
   Applying admin.0002_logentry_remove_auto_add... OK
   Applying admin.0003_logentry_add_action_flag_choices... OK
@@ -89,18 +124,21 @@ Running migrations:
   Applying auth.0007_alter_validators_add_error_messages... OK
   Applying auth.0008_alter_user_username_max_length... OK
   Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying authtoken.0001_initial... OK
+  Applying authtoken.0002_auto_20160226_1747... OK
   Applying sites.0001_initial... OK
   Applying sites.0002_alter_domain_unique... OK
-  Applying sessions.0001_initial... OK
-```
+  ```
 
 Populate the DataStax Enterprise (DSE) or Cassandra database:
 
 ```
 $ python manage.py sync_cassandra
 
-Creating keyspace caravaggio [CONNECTION cassandra] ..
-Syncing example.models.ExampleModel
+Creating keyspace myproject [CONNECTION cassandra] ..
+Syncing django_cassandra_engine.sessions.models.Session
+Syncing davinci_crawling.models.Checkpoint
+Syncing myproject.models.MyprojectResource
 ```
 
 Populate the DataStax Enterprise (DSE) search indexes. This feature is only available for a DSE configuration:
@@ -108,8 +146,24 @@ Populate the DataStax Enterprise (DSE) search indexes. This feature is only avai
 ```
 $ python manage.py sync_indexes
 
-Creating keyspace caravaggio [CONNECTION cassandra] ..
-Syncing example.models.ExampleModel
+INFO Creating indexes in myproject4 [CONNECTION cassandra] ..
+INFO Creating index %s.%s
+INFO Index class associated to te model myproject.models.MyprojectResourceIndex
+INFO Creating SEARCH INDEX if not exists for model: <class 'django_cassandra_engine.models.MyprojectResource'>
+INFO Setting index parameters: realtime = true
+INFO Setting index parameters: autoCommitTime = 100
+INFO Setting index parameters: ramBufferSize = 2048
+INFO Processing field field <class 'haystack.fields.CharField'>(situation)
+WARNING Maybe te field has been already defined in the schema. Cause: Error from server: code=2200 [Invalid query] message="The search index schema is not valid because: Can't load schema schema.xml: [schema.xml] Duplicate field definition for 'situation' [[[situation{type=StrField,properties=indexed,omitNorms,omitTermFreqAndPositions}]]] and [[[situation{type=StrField,properties=indexed,stored,omitNorms,omitTermFreqAndPositions}]]]"
+INFO Processing field field <class 'haystack.fields.CharField'>(name)
+WARNING Maybe te field has been already defined in the schema. Cause: Error from server: code=2200 [Invalid query] message="The search index schema is not valid because: Can't load schema schema.xml: [schema.xml] Duplicate field definition for 'name' [[[name{type=StrField,properties=indexed,omitNorms,omitTermFreqAndPositions}]]] and [[[name{type=StrField,properties=indexed,stored,omitNorms,omitTermFreqAndPositions}]]]"
+INFO Processing field field <class 'haystack.fields.CharField'>(short_description)
+WARNING Maybe te field has been already defined in the schema. Cause: Error from server: code=2200 [Invalid query] message="The search index schema is not valid because: Can't load schema schema.xml: [schema.xml] Duplicate field definition for 'short_description' [[[short_description{type=StrField,properties=indexed,omitNorms,omitTermFreqAndPositions}]]] and [[[short_description{type=TextField,properties=indexed,tokenized,stored}]]]"
+INFO Changing SEARCH INDEX field short_description to TextField
+INFO Processing field field <class 'haystack.fields.CharField'>(long_description)
+WARNING Maybe te field has been already defined in the schema. Cause: Error from server: code=2200 [Invalid query] message="The search index schema is not valid because: Can't load schema schema.xml: [schema.xml] Duplicate field definition for 'long_description' [[[long_description{type=StrField,properties=indexed,omitNorms,omitTermFreqAndPositions}]]] and [[[long_description{type=TextField,properties=indexed,tokenized,stored}]]]"
+...
+...
 ```
 
 ### Setup the admin user
@@ -153,7 +207,7 @@ Before start the crawler we need to have ready the responses for the following q
 After responde these questions we are ready to run the crawler: 
 
 ```
-python manage.py crawl my_crawler \
+python manage.py crawl myproject \
     --workers-num 10 \
     --phantomjs-path /servers/phantomjs-2.1.1-macosx/bin/phantomjs \
     --io-gs-project centering-badge-212119 \
