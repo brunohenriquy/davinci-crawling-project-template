@@ -17,6 +17,9 @@ _logger = logging.getLogger("davinci_crawler_{}.search_indexes".
 
 class {{ project_name|capfirst }}ResourceIndex(BaseSearchIndex, indexes.Indexable):
 
+    user = indexes.CharField(
+        model_attr="user")
+
     situation = indexes.CharField(
         model_attr="situation", faceted=True)
 

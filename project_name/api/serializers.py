@@ -25,6 +25,9 @@ class {{ project_name|capfirst }}ResourceSerializerV1(
     Represents a Business Object API View with support for JSON, list, and map
     fields.
     """
+    user = serializers.HiddenField(
+        default=dse_fields.CurrentUserNameDefault())
+
     specialties = fields.ListField(required=False, child=fields.CharField())
 
     websites = fields.DictField(required=False, child=fields.CharField())
@@ -48,6 +51,9 @@ class {{ project_name|capfirst }}ResourceSearchSerializerV1(
     """
     A Fast Searcher (Solr) version of the original Business Object API View
     """
+    user = serializers.HiddenField(
+        default=dse_fields.CurrentUserNameDefault())
+
     specialties = fields.ListField(required=False, child=fields.CharField())
 
     websites = fields.DictField(required=False, child=fields.CharField())
@@ -81,6 +87,9 @@ class {{ project_name|capfirst }}ResourceGEOSearchSerializerV1(
     A Fast Searcher (Solr) version of the original Business Object API View
     to do GEO Spatial searches
     """
+    user = serializers.HiddenField(
+        default=dse_fields.CurrentUserNameDefault())
+
     specialties = fields.ListField(required=False, child=fields.CharField())
 
     websites = fields.DictField(required=False, child=fields.CharField())

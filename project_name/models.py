@@ -32,6 +32,9 @@ class {{ project_name|capfirst }}Resource(CustomDjangoCassandraModel):
     # Force that all the values will reside in the seam node of the cluster
     _id = columns.UUID(partition_key=True, default=uuid.uuid4)
 
+    # The owner of the data. Who own's the company data persisted
+    user = columns.Text(primary_key=True)
+
     # When was created the entity and the last modification date
     created_at = columns.DateTime(default=datetime.utcnow)
     updated_at = columns.DateTime(default=datetime.utcnow)
