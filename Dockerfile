@@ -20,19 +20,19 @@ ENV GOOGLE_ANALYTICS_ID ""
 
 ENV DB_HOST "127.0.0.1"
 ENV DB_PORT 3306
-ENV DB_NAME "{{ project_name }}"
-ENV DB_USER "{{ project_name }}"
-ENV DB_PASS "{{ project_name }}"
+ENV DB_NAME "{{ project_name | lower }}"
+ENV DB_USER "{{ project_name | lower }}"
+ENV DB_PASS "{{ project_name | lower }}"
 
 ENV CASSANDRA_DB_HOST "127.0.0.1,127.0.0.2,127.0.0.3"
-ENV CASSANDRA_DB_NAME "{{ project_name }}"
-ENV CASSANDRA_DB_USER "{{ project_name }}"
-ENV CASSANDRA_DB_PASSWORD "{{ project_name }}"
+ENV CASSANDRA_DB_NAME "{{ project_name | lower }}"
+ENV CASSANDRA_DB_USER "{{ project_name | lower }}"
+ENV CASSANDRA_DB_PASSWORD "{{ project_name | lower }}"
 ENV CASSANDRA_DB_STRATEGY "NetworkTopologyStrategy"
 ENV CASSANDRA_DB_REPLICATION "3"
 
 ENV HAYSTACK_ACTIVE "True"
-ENV HAYSTACK_KEYSPACE "{{ project_name }}"
+ENV HAYSTACK_KEYSPACE "{{ project_name | lower }}"
 ENV HAYSTACK_URL "http://127.0.0.1:8983/solr"
 ENV HAYSTACK_ADMIN_URL "http://127.0.0.1:8983/solr/admin/cores"
 
@@ -54,7 +54,7 @@ RUN apt-get update && apt-get install -yq \
 COPY conf/gae_prod_nginx.conf /etc/nginx/nginx.conf
 
 # create log dir configured in nginx.conf
-RUN mkdir -p /var/log/{{ project_name }}
+RUN mkdir -p /var/log/{{ project_name | lower }}
 
 # Create a simple file to handle heath checks. Health checking can be disabled
 # in app.yaml, but is highly recommended. Google App Engine will send an HTTP

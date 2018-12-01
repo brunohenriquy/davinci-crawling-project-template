@@ -2,8 +2,8 @@
 
 # Prepare log files and start outputting logs to stdout
 mkdir logs
-touch logs/{{ project_name }}-gunicorn.log
-touch logs/{{ project_name }}-access.log
+touch logs/{{ project_name | lower }}-gunicorn.log
+touch logs/{{ project_name | lower }}-access.log
 tail -n 0 -f logs/*.log &
 
 sed -e "s/\${DB_HOST}/$DB_HOST/" \
@@ -19,4 +19,4 @@ sed -e "s/\${DB_USER}/$DB_USER/" \
 pgbouncer -d -u pgbouncer `pwd`/conf/gae_pgbouncer.ini
 
 # Start WSGI server
-gunicorn -b :$PORT -c {{ project_name }}/gunicorn.conf.py {{ project_name }}.wsgi
+gunicorn -b :$PORT -c {{ project_name | lower }}/gunicorn.conf.py {{ project_name | lower }}.wsgi

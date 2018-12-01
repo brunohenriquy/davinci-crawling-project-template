@@ -2,7 +2,7 @@
 # Copyright (c) 2018-2019 PreSeries Tech, SL
 
 """
-{{ project_name }} URL Configuration
+{{ project_name | lower }} URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2./topics/http/urls/
@@ -29,7 +29,7 @@ from django.contrib import admin
 from caravaggio_rest_api.users.urls import urlpatterns as users_urls
 from caravaggio_rest_api.views import CustomAuthToken, get_swagger_view
 
-from {{ project_name }}.api.urls import urlpatterns as {{ project_name }}_urls
+from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
 
 urlpatterns = [
     # ## DO NOT TOUCH
@@ -56,13 +56,13 @@ urlpatterns = [
     # Users API version
     url(r'^users/', include(users_urls)),
 
-    url(r'^api-schema/{{ project_name }}/$',
+    url(r'^api-schema/{{ project_name | lower }}/$',
         get_schema_view(title="{{ project_name | capfirst }} API",
-                        patterns=[url(r'^{{ project_name }}/',
-                                      include({{ project_name }}_urls))])),
+                        patterns=[url(r'^{{ project_name | lower }}/',
+                                      include({{ project_name | lower }}_urls))])),
 
     # {{ project_name | capfirst }} API version
-    url(r'^{{ project_name }}/', include({{ project_name }}_urls)),
+    url(r'^{{ project_name | lower }}/', include({{ project_name | lower }}_urls)),
 ]
 
 if settings.DEBUG:

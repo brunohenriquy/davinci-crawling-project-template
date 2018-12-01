@@ -195,9 +195,9 @@ Type 'yes' to continue, or 'no' to cancel: yes
 Let's create the admin user with its own auth token
 
 ```
-$ python manage.py createsuperuser --username _{{ project_name }} --email {{ project_name }}@preseries.com --noinput
-$ python manage.py changepassword _{{ project_name }}
-Changing password for user '_{{ project_name }}'
+$ python manage.py createsuperuser --username _myproject --email myproject@preseries.com --noinput
+$ python manage.py changepassword _myproject
+Changing password for user '_myproject'
 Password: 
 ```
 
@@ -205,10 +205,10 @@ A token will be created automatically for the user. We can get it back using the
 
 ```
 $ curl -H "Content-Type: application/json" -X POST \
-    -d '{"username": "_{{ project_name }}", "password": "MY_PASSWORD"}' \
+    -d '{"username": "_myproject", "password": "MY_PASSWORD"}' \
     http://127.0.0.1:8001/api-token-auth/
     
-{"token":"b10061d0b62867d0d9e3eb4a8c8cb6a068b2f14a","user_id":1,"email":"{{ project_name }}@preseries.com"}    
+{"token":"b10061d0b62867d0d9e3eb4a8c8cb6a068b2f14a","user_id":1,"email":"myproject@preseries.com"}    
 ```
 
 ## Run the crawler

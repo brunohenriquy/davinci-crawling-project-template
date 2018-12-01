@@ -15,7 +15,7 @@ try:
 except ImportError:
     from cassandra.cqlengine import columns, ValidationError
 
-from {{ project_name }} import CRAWLER_NAME
+from {{ project_name | lower }} import CRAWLER_NAME
 
 _logger = logging.getLogger("davinci_crawler_{}.models".format(CRAWLER_NAME))
 
@@ -25,9 +25,9 @@ SITUATION_GRANTED = "GRANTED"
 SITUATIONS = [SITUATION_CANCELLED, SITUATION_GRANTED]
 
 
-class {{ project_name|capfirst }}Resource(CustomDjangoCassandraModel):
+class {{ project_name | capfirst }}Resource(CustomDjangoCassandraModel):
 
-    __table_name__ = "{{ project_name }}_resource"
+    __table_name__ = "{{ project_name | lower }}_resource"
 
     # Force that all the values will reside in the seam node of the cluster
     _id = columns.UUID(partition_key=True, default=uuid.uuid4)
@@ -91,8 +91,8 @@ class {{ project_name|capfirst }}Resource(CustomDjangoCassandraModel):
 
 
 # We need to set the new value for the changed_at field
-@receiver(pre_save, sender={{ project_name|capfirst }}Resource)
-def pre_save_{{ project_name|lower }}_resource(
+@receiver(pre_save, sender={{ project_name | capfirst }}Resource)
+def pre_save_{{ project_name | lower }}_resource(
         sender, instance=None, using=None, update_fields=None, **kwargs):
     instance.updated_at = datetime.utcnow()
 

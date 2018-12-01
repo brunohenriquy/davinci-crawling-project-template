@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 
-from {{ project_name }}.api.views import \
-    {{project_name | capfirst}}ResourceViewSet, \
-    {{ project_name|capfirst }}ResourceSearchViewSet, \
+from {{ project_name | lower }}.api.views import \
+    {{ project_name | capfirst}}ResourceViewSet, \
+    {{ project_name | capfirst }}ResourceSearchViewSet, \
     {{ project_name | capfirst }}ResourceGEOSearchViewSet
 
 from rest_framework import routers
@@ -27,19 +27,23 @@ from rest_framework import routers
 
 api_{{ project_name | upper }} = routers.DefaultRouter()
 
-api_{{ project_name | upper }}.register(r'{{ project_name }}/search',
-                        {{project_name | capfirst}}ResourceSearchViewSet,
-                        base_name="{{ project_name }}-search")
+api_{{ project_name | upper }}.register(r'{{ project_name | lower }}/search',
+                        {{ project_name | capfirst }}ResourceSearchViewSet,
+                        base_name="{{ project_name | lower }}-search")
+
+api_{{ project_name | upper }}.register(r'{{ project_name | lower }}/search/facets',
+                        {{ project_name | capfirst }}ResourceSearchViewSet,
+                        base_name="{{ project_name | lower }}-search-facets")
 
 api_{{ project_name | upper }}.register(r'{{ project_name }}/geosearch',
-                        {{project_name | capfirst}}ResourceGEOSearchViewSet,
-                        base_name="{{ project_name }}-geosearch")
+                        {{ project_name | capfirst }}ResourceGEOSearchViewSet,
+                        base_name="{{ project_name | lower }}-geosearch")
 
 api_{{ project_name | upper }}.register(r'{{ project_name }}',
-                        {{project_name | capfirst}}ResourceViewSet,
-                        base_name="{{ project_name }}")
+                        {{ project_name | capfirst }}ResourceViewSet,
+                        base_name="{{ project_name | lower }}")
 
 urlpatterns = [
     # Company API version
-    url(r'^', include(api_{{ project_name | upper }}.urls), name="{{ project_name }}-api"),
+    url(r'^', include(api_{{ project_name | upper }}.urls), name="{{ project_name | lower }}-api"),
 ]

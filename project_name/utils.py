@@ -4,7 +4,7 @@ import logging
 
 from dateutil.parser import parse as date_parse
 
-from {{ project_name }} import CRAWLER_NAME
+from {{ project_name | lower }} import CRAWLER_NAME
 
 # A field to save in the checkpoint records
 LAST_EXECUTION_DATE_CTL_FIELD = "last_execution_date"

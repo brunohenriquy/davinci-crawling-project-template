@@ -8,7 +8,7 @@ DIRECTORY="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Sandbox
 PROJECT_NAME=
-CODE_PROJECT_NAME=sky
+CODE_PROJECT_NAME={{ project_name | lower }}
 CODE_PROJECT_VERSION=
 GAE_VERSION=
 GEA_TYPE=flex

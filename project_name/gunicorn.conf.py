@@ -42,7 +42,7 @@ spew = False
 ###############################################################################
 preload_app = False
 daemon = False
-pidfile = '/var/run/{{ project_name }}.pid'
+pidfile = '/var/run/{{ project_name | lower }}.pid'
 user = 'root'
 group = 'root'
 umask = 0
@@ -51,13 +51,13 @@ tmp_upload_dir = '/tmp'
 ###############################################################################
 # Logging
 ###############################################################################
-accesslog = '/var/log/{{ project_name }}_access.log'
+accesslog = '/var/log/{{ project_name | lower }}_access.log'
 access_logformat = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
-errorlog = '/var/log/{{ project_name }}_s_error.log'
+errorlog = '/var/log/{{ project_name | lower }}_s_error.log'
 loglevel = 'info'
 logger_class = 'simple'
 
 ###############################################################################
 # Process Naming
 ###############################################################################
-proc_name = '{{ project_name }}'
+proc_name = '{{ project_name | lower }}'

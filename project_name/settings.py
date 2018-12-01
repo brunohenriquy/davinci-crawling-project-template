@@ -94,7 +94,7 @@ INSTALLED_APPS = [
     'caravaggio_rest_api',
     'davinci_crawling',
     # 'davinci_crawling.example.bovespa',
-    '{{ project_name }}'
+    '{{ project_name | lower }}'
 ]
 
 if DEBUG:
@@ -116,14 +116,14 @@ MIDDLEWARE = [
 if DEBUG:
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
-ROOT_URLCONF = '{{ project_name }}.urls'
+ROOT_URLCONF = '{{ project_name | lower }}.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR,
-                         'davinci_crawler_{{ project_name }}/templates'),
+                         'davinci_crawler_{{ project_name | lower }}/templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -141,7 +141,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = '{{ project_name }}.wsgi.application'
+WSGI_APPLICATION = '{{ project_name | lower }}.wsgi.application'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -194,7 +194,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'davinci_crawler_{{ project_name }}': {
+        'davinci_crawler_{{ project_name | lower }}': {
             'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
@@ -218,18 +218,18 @@ LOGGING = {
 # [START db_setup]
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = os.getenv("DB_PORT", "6543")
-DB_NAME = os.getenv("DB_NAME", "{{ project_name }}")
-DB_USER = os.getenv("DB_USER", "{{ project_name }}")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "{{ project_name }}")
+DB_NAME = os.getenv("DB_NAME", "{{ project_name | lower }}")
+DB_USER = os.getenv("DB_USER", "{{ project_name | lower }}")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "{{ project_name | lower }}")
 
 CASSANDRA_DB_HOST = os.getenv(
     "CASSANDRA_DB_HOST", "127.0.0.1,127.0.0.2,127.0.0.3")
 CASSANDRA_DB_NAME = \
-    os.getenv("CASSANDRA_DB_NAME", "{{ project_name }}")
+    os.getenv("CASSANDRA_DB_NAME", "{{ project_name | lower }}")
 CASSANDRA_DB_USER = \
-    os.getenv("CASSANDRA_DB_USER", "{{ project_name }}")
+    os.getenv("CASSANDRA_DB_USER", "{{ project_name | lower }}")
 CASSANDRA_DB_PASSWORD = \
-    os.getenv("CASSANDRA_DB_PASSWORD", "{{ project_name }}")
+    os.getenv("CASSANDRA_DB_PASSWORD", "{{ project_name | lower }}")
 CASSANDRA_DB_STRATEGY = \
     os.getenv("CASSANDRA_DB_STRATEGY", "SimpleStrategy")
 CASSANDRA_DB_REPLICATION = os.getenv("CASSANDRA_DB_REPLICATION", 1)
@@ -348,7 +348,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    # os.path.join(BASE_DIR + '/{{ project_name }}/static'),
+    # os.path.join(BASE_DIR + '/{{ project_name | lower }}/static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -496,22 +496,22 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
-        "KEY_PREFIX": "{{ project_name }}"
+        "KEY_PREFIX": "{{ project_name | lower }}"
                       ""
     },
     'disk_cache': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/var/tmp/{{ project_name }}_cache',
+        'LOCATION': '/var/tmp/{{ project_name | lower }}_cache',
         'TIMEOUT': 300,
         'OPTIONS': {
             'MAX_ENTRIES': 10000
         },
-        "KEY_PREFIX": "{{ project_name }}"
+        "KEY_PREFIX": "{{ project_name | lower }}"
     },
     'mem_cache': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': '{{ project_name }}_cache',
-        "KEY_PREFIX": "{{ project_name }}"
+        'LOCATION': '{{ project_name | lower }}_cache',
+        "KEY_PREFIX": "{{ project_name | lower }}"
     }
 }
 

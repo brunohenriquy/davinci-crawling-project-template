@@ -3,6 +3,9 @@
 
 import logging
 import time
+import random
+import json
+from datetime import datetime, timedelta
 
 from caravaggio_rest_api.haystack.backends.utils import \
     CaravaggioSearchPaginator
@@ -14,12 +17,12 @@ from solrq import Q, Range, ANY
 from caravaggio_rest_api.haystack.query import \
     CaravaggioSearchQuerySet
 
-from {{ project_name }} import CRAWLER_NAME
-from {{ project_name }}.utils import \
+from {{ project_name | lower }} import CRAWLER_NAME
+from {{ project_name | lower }}.utils import \
     get_from_date, RESET_FROM_DATE_ARG, FROM_DATE_ARG, \
     LAST_EXECUTION_DATE_CTL_FIELD
 
-from .models import {{ project_name|capfirst }}Resource, SITUATION_GRANTED
+from .models import {{ project_name | capfirst }}Resource, SITUATION_GRANTED
 
 from davinci_crawling.crawler import Crawler
 from davinci_crawling.io import put_checkpoint_data, get_checkpoint_data
@@ -34,7 +37,7 @@ LAST_GENERATED_INDEX = "last_index"
 _logger = logging.getLogger("davinci_crawler_{}".format(CRAWLER_NAME))
 
 
-class {{ project_name|capfirst }}Crawler(Crawler):
+class {{ project_name | capfirst }}Crawler(Crawler):
 
     __crawler_name__ = CRAWLER_NAME
 
@@ -101,13 +104,34 @@ class {{ project_name|capfirst }}Crawler(Crawler):
 
         # BEGIN DEMO
         params = {
+            "user": "admin",
             "crawl_param": int(crawling_params),
             "name": "Name {}".format(crawling_params),
             "short_description": "Short desc: {}".format(crawling_params),
             "long_description": "Long desc: Name {}".format(crawling_params),
+            "foundation_date":
+                datetime.now() - timedelta(days=int(crawling_params) * 5),
+            "country_code": random.choice(["USA", "BEL", "FRA", "DEN"]),
+            "specialties": ["Software", "Predictive Analytics",
+                            "Big Data", "Machine Learning"],
+            "websites": {
+                "blog": "https://blog.preseries.com",
+                "homepage": "https://preseries.com",
+                "api": "https://preseries.io",
+            },
+            "extra_data": json.dumps({
+                "key_1": {
+                    "key_1.1": ["val 1.1.1", "val 1.1.2"],
+                    "key_1.2": ["val 1.2.1", "val 1.2.2"],
+                },
+                "key_2": 12,
+                "key_3": ["key 3.1", "key 3.2", "key 3.3"]
+            }),
+            "latitude": 44.59641,
+            "longitude": -123.25022,
             "situation": SITUATION_GRANTED,
         }
-        {{ project_name|capfirst }}Resource.create(**params)
+        {{ project_name | capfirst }}Resource.create(**params)
 
         num_loops = 3
         while num_loops:

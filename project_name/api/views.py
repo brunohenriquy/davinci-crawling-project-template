@@ -15,15 +15,16 @@ from caravaggio_rest_api.drf_haystack.viewsets import \
 
 from drf_haystack import mixins
 
-from .serializers import {{ project_name|capfirst }}ResourceSerializerV1, \
-    {{ project_name | capfirst}}ResourceSearchSerializerV1, \
-    {{ project_name | capfirst}}ResourceFacetSerializerV1
+from .serializers import {{ project_name | capfirst }}ResourceSerializerV1, \
+    {{ project_name | capfirst }}ResourceSearchSerializerV1, \
+    {{ project_name | capfirst }}ResourceGEOSearchSerializerV1, \
+    {{ project_name | capfirst }}ResourceFacetSerializerV1
 
-from {{ project_name }}.models import {{project_name | capfirst}}Resource
+from {{ project_name | lower }}.models import {{project_name | capfirst}}Resource
 
 
 class {{ project_name | capfirst }}ResourceViewSet(CustomModelViewSet):
-    queryset = {{ project_name | capfirst}}Resource.objects.all()
+    queryset = {{ project_name | capfirst }}Resource.objects.all()
 
     # Defined in the settings as default authentication classes
     # authentication_classes = (
@@ -32,7 +33,7 @@ class {{ project_name | capfirst }}ResourceViewSet(CustomModelViewSet):
     # Defined in the settings as default permission classes
     # permission_classes = (IsAuthenticated,)
 
-    serializer_class = {{project_name | capfirst}}ResourceSerializerV1
+    serializer_class = {{ project_name | capfirst }}ResourceSerializerV1
 
     filter_fields = ("_id", "created_at", "updated_at", "situation",
                      'country_code')
@@ -50,7 +51,7 @@ class {{ project_name | capfirst }}ResourceSearchViewSet(mixins.FacetMixin, Cust
     #  for this particular view.
     # (Translates to `SearchQuerySet().models(*index_models)`
     # behind the scenes.
-    index_models = [{{project_name | capfirst}}Resource]
+    index_models = [{{ project_name | capfirst }}Resource]
 
     # Defined in the settings as default authentication classes
     # authentication_classes = (
@@ -59,14 +60,14 @@ class {{ project_name | capfirst }}ResourceSearchViewSet(mixins.FacetMixin, Cust
     # Defined in the settings as default permission classes
     # permission_classes = (IsAuthenticated,)
 
-    serializer_class = {{project_name | capfirst}}ResourceSearchSerializerV1
+    serializer_class = {{ project_name | capfirst }}ResourceSearchSerializerV1
 
-    facet_serializer_class = {{project_name | capfirst}}ResourceFacetSerializerV1
+    facet_serializer_class = {{ project_name | capfirst }}ResourceFacetSerializerV1
 
     # The Search viewsets needs information about the serializer to be use
     # with the results. The previous serializer is used to parse
     # the search requests adding fields like text, autocomplete, score, etc.
-    results_serializer_class = {{project_name | capfirst}}ResourceSerializerV1
+    results_serializer_class = {{ project_name | capfirst }}ResourceSerializerV1
 
     ordering_fields = (
         "_id", "name", "short_description", "long_description",
@@ -86,7 +87,7 @@ class {{ project_name | capfirst }}ResourceGEOSearchViewSet(CustomHaystackViewSe
     #  for this particular view.
     # (Translates to `SearchQuerySet().models(*index_models)`
     # behind the scenes.
-    index_models = [{{project_name | capfirst}}Resource]
+    index_models = [{{ project_name | capfirst }}Resource]
 
     # Defined in the settings as default authentication classes
     # authentication_classes = (
@@ -95,12 +96,12 @@ class {{ project_name | capfirst }}ResourceGEOSearchViewSet(CustomHaystackViewSe
     # Defined in the settings as default permission classes
     # permission_classes = (IsAuthenticated,)
 
-    serializer_class = {{ project_name|capfirst }}ResourceGEOSearchSerializerV1
+    serializer_class = {{ project_name | capfirst }}ResourceGEOSearchSerializerV1
 
     # The Search viewsets needs information about the serializer to be use
     # with the results. The previous serializer is used to parse
     # the search requests adding fields like text, autocomplete, score, etc.
-    results_serializer_class = {{project_name | capfirst}}ResourceSerializerV1
+    results_serializer_class = {{ project_name | capfirst }}ResourceSerializerV1
 
     ordering_fields = ("_id", "created_at", "updated_at", "foundation_date",
                        "country_code", "specialties")
