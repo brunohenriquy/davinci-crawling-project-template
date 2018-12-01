@@ -44,7 +44,7 @@ $ pip install django>=2
 $ django-admin.py startproject \
   --template=https://github.com/preseries/davinci-crawling-template-project/archive/master.zip \
   --name=Dockerfile \
-  --extension=py,md,env,sh,template,yamltemplate \
+  --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
   myproject
   
 $ cd myproject

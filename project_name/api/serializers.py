@@ -82,22 +82,11 @@ class {{ project_name | capfirst }}ResourceSearchSerializerV1(
 
 
 class {{ project_name | capfirst }}ResourceGEOSearchSerializerV1(
-        CustomHaystackSerializer, BaseCachedSerializerMixin):
+        {{project_name | capfirst}}ResourceSearchSerializerV1):
     """
     A Fast Searcher (Solr) version of the original Business Object API View
     to do GEO Spatial searches
     """
-    user = serializers.HiddenField(
-        default=dse_fields.CurrentUserNameDefault())
-
-    specialties = fields.ListField(required=False, child=fields.CharField())
-
-    websites = fields.DictField(required=False, child=fields.CharField())
-
-    extra_data = dse_fields.CassandraJSONFieldAsText(required=False)
-
-    score = fields.FloatField(required=False)
-
     distance = dse_fields.DistanceField(required=False, units="m")
 
     class Meta(CustomHaystackSerializer.Meta):

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from dateutil import relativedelta
 
 from caravaggio_rest_api.utils import delete_all_records
-from {{ project_name | lower }}.models import {{ project_name }}Resource
+from {{ project_name | lower }}.models import {{ project_name | capfirst }}Resource
 
 from rest_framework import status
 from django.urls import reverse
@@ -21,10 +21,10 @@ from caravaggio_rest_api.tests import CaravaggioBaseTest
 
 # Create your tests here.
 from {{ project_name | lower }}.api.serializers import \
-    {{ project_name }}ResourceSerializerV1, \
-    {{ project_name }}ResourceSearchSerializerV1, \
-    {{project_name}}ResourceGEOSearchSerializerV1, \
-    {{project_name}}ResourceFacetSerializerV1
+    {{ project_name | capfirst }}ResourceSerializerV1, \
+    {{ project_name | capfirst }}ResourceSearchSerializerV1, \
+    {{ project_name | capfirst }}ResourceGEOSearchSerializerV1, \
+    {{ project_name | capfirst }}ResourceFacetSerializerV1
 
 CONTENTTYPE_JON = "application/json"
 
@@ -51,14 +51,14 @@ class GetAllTest(CaravaggioBaseTest):
             username="manual_user", password="manual_user")
 
         # We clean the test database ({{ project_name }}Resource)
-        delete_all_records({{ project_name }}Resource)
+        delete_all_records({{ project_name | capfirst }}Resource)
 
         # We load the test data from the data.json file using the
         # serializer class
         current_path = os.path.dirname(os.path.abspath(__file__))
         cls.resources = GetAllTest.\
             load_test_data("{}/data.json".format(current_path),
-                           {{project_name}}ResourceSerializerV1)
+                           {{ project_name | capfirst }}ResourceSerializerV1)
 
     def test_create_resources(self):
         for resource in self.resources:
