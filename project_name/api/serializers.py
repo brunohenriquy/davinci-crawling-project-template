@@ -11,6 +11,7 @@ from rest_framework import fields, serializers
 from rest_framework_cache.registry import cache_registry
 
 from caravaggio_rest_api.drf_haystack import serializers as dse_serializers
+from caravaggio_rest_api import fields as dse_fields
 
 from {{ project_name }}.models import \
     {{project_name | capfirst}}Resource
@@ -19,26 +20,39 @@ from {{ project_name }}.search_indexes import \
 
 
 class {{ project_name|capfirst }}ResourceSerializerV1(
-    dse_serializers.CassandraModelSerializer, BaseCachedSerializerMixin):
+        dse_serializers.CassandraModelSerializer, BaseCachedSerializerMixin):
     """
     Represents a Business Object API View with support for JSON, list, and map
     fields.
     """
+    specialties = fields.ListField(required=False, child=fields.CharField())
+
+    websites = fields.DictField(required=False, child=fields.CharField())
+
+    extra_data = dse_fields.CassandraJSONFieldAsText(required=False)
 
     class Meta:
         model = {{ project_name|capfirst }}Resource
-        fields = ("_id",
+        fields = ("_id", "user",
                   "created_at", "updated_at",
                   "name", "short_description", "long_description",
-                  "situation", "crawl_param")
-        read_only_fields = ("_id", "created_at", "updated_at")
+                  "situation", "crawl_param",
+                  "foundation_date", "country_code",
+                  "latitude", "longitude", "specialties", "websites",
+                  "extra_data")
+        read_only_fields = ("_id", "user", "created_at", "updated_at")
 
 
 class {{ project_name|capfirst }}ResourceSearchSerializerV1(
-    CustomHaystackSerializer, BaseCachedSerializerMixin):
+        CustomHaystackSerializer, BaseCachedSerializerMixin):
     """
     A Fast Searcher (Solr) version of the original Business Object API View
     """
+    specialties = fields.ListField(required=False, child=fields.CharField())
+
+    websites = fields.DictField(required=False, child=fields.CharField())
+
+    extra_data = dse_fields.CassandraJSONFieldAsText(required=False)
 
     score = fields.FloatField(required=False)
 
@@ -52,11 +66,46 @@ class {{ project_name|capfirst }}ResourceSearchSerializerV1(
         # NOTE: Make sure you don't confuse these with model attributes. These
         # fields belong to the search index!
         fields = [
-            "_id",
-            "created_at", "cnpj", "updated_at",
+            "_id", "user",
+            "created_at", "updated_at",
             "name", "short_description", "long_description",
-            "situation", "crawl_param",
-            "score"]
+            "situation", "crawl_param", "foundation_date", "country_code",
+            "latitude", "longitude", "specialties", "websites",
+            "extra_data",
+            "text", "score"]
+
+
+class {{ project_name|capfirst }}ResourceGEOSearchSerializerV1(
+        CustomHaystackSerializer, BaseCachedSerializerMixin):
+    """
+    A Fast Searcher (Solr) version of the original Business Object API View
+    to do GEO Spatial searches
+    """
+    specialties = fields.ListField(required=False, child=fields.CharField())
+
+    websites = fields.DictField(required=False, child=fields.CharField())
+
+    extra_data = dse_fields.CassandraJSONFieldAsText(required=False)
+
+    score = fields.FloatField(required=False)
+
+    distance = dse_fields.DistanceField(required=False, units="m")
+
+    class Meta(CustomHaystackSerializer.Meta):
+        model = {{ project_name|capfirst }}Resource
+        # The `index_classes` attribute is a list of which search indexes
+        # we want to include in the search.
+        index_classes = [{{ project_name|capfirst }}ResourceIndex]
+
+        fields = [
+            "_id", "user",
+            "created_at", "updated_at",
+            "name", "short_description", "long_description",
+            "situation", "crawl_param", "foundation_date", "country_code",
+            "latitude", "longitude", "specialties", "websites",
+            "extra_data",
+            "text",  "score", "distance"
+        ]
 
 
 class {{ project_name|capfirst }}ResourceFacetSerializerV1(HaystackFacetSerializer):
@@ -69,10 +118,19 @@ class {{ project_name|capfirst }}ResourceFacetSerializerV1(HaystackFacetSerializ
 
     class Meta:
         index_classes = [{{ project_name|capfirst }}Resource]
-        fields = ["created_at", "updated_at", "situation"]
+        fields = ["created_at", "updated_at", "situation",
+                  "specialties", "foundation_date", "country_code",]
 
         field_options = {
             "situation": {},
+            "country_code": {},
+            "specialties": {},
+            "foundation_date": {
+                "start_date": datetime.now() - timedelta(days=50 * 365),
+                "end_date": datetime.now(),
+                "gap_by": "month",
+                "gap_amount": 3
+            },
             "created_at": {
                 "start_date": datetime.now() - timedelta(days=5* 365),
                 "end_date": datetime.now(),
@@ -91,3 +149,4 @@ class {{ project_name|capfirst }}ResourceFacetSerializerV1(HaystackFacetSerializ
 # Cache configuration
 cache_registry.register({{ project_name|capfirst }}ResourceSerializerV1)
 cache_registry.register({{ project_name|capfirst }}ResourceSearchSerializerV1)
+cache_registry.register({{ project_name|capfirst }}ResourceGEOSearchSerializerV1)

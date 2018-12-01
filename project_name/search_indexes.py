@@ -29,6 +29,24 @@ class {{ project_name|capfirst }}ResourceIndex(BaseSearchIndex, indexes.Indexabl
     long_description = indexes.CharField(
         model_attr="long_description")
 
+    foundation_date = indexes.DateField(
+        model_attr="foundation_date", faceted=True)
+
+    country_code = indexes.CharField(
+        model_attr="country_code", faceted=True)
+
+    coordinates = indexes.LocationField(
+        model_attr="coordinates")
+
+    specialties = indexes.MultiValueField(
+        null=True, model_attr="specialties", faceted=True)
+
+    websites = indexes.MultiValueField(
+        null=True, model_attr="websites")
+
+    extra_data = indexes.CharField(
+        model_attr="extra_data")
+
     # When was created the entity and the last modification date
     created_at = indexes.DateTimeField(
         model_attr="created_at", faceted=True)
@@ -42,7 +60,7 @@ class {{ project_name|capfirst }}ResourceIndex(BaseSearchIndex, indexes.Indexabl
 
     class Meta:
 
-        text_fields = ["short_description", "long_description"]
+        text_fields = ["short_description", "long_description", "extra_data"]
 
         # Once the index has been created it cannot be changed
         # with sync_indexes. Changes should be made by hand.
@@ -53,7 +71,7 @@ class {{ project_name|capfirst }}ResourceIndex(BaseSearchIndex, indexes.Indexabl
         }
 
     def get_model(self):
-        return {{ project_name|capfirst }}Resource
+        return {{ project_name | capfirst }}Resource
 
     def index_queryset(self, using=None):
         return self.get_model().objects.filter(

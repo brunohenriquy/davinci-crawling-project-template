@@ -85,9 +85,6 @@ INSTALLED_APPS = [
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 
-    'django_extensions',
-    'debug_toolbar',
-
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_cache',
@@ -99,6 +96,11 @@ INSTALLED_APPS = [
     # 'davinci_crawling.example.bovespa',
     '{{ project_name }}'
 ]
+
+if DEBUG:
+    INSTALLED_APPS += [
+        'django_extensions', 'debug_toolbar'
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -346,7 +348,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(BASE_DIR + '/{{ project_name }}/static'),
+    # os.path.join(BASE_DIR + '/{{ project_name }}/static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -424,6 +426,7 @@ THROTTLED_VIEWS = [
     "UserViewSet",
 
     # Your ViewSets should be declared here
+    "{{ project_name | capfirst }}ResourceViewSet", "{{ project_name | capfirst }}ResourceSearchViewSet"
 ]
 
 # Masters

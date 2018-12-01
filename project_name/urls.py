@@ -17,7 +17,9 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import url, include
+from django.urls import path
 
 from rest_framework_cache.registry import cache_registry
 from rest_framework.schemas import get_schema_view
@@ -27,6 +29,7 @@ from django.contrib import admin
 from caravaggio_rest_api.users.urls import urlpatterns as users_urls
 from caravaggio_rest_api.views import CustomAuthToken, get_swagger_view
 
+from {{ project_name }}.api.urls import urlpatterns as {{ project_name }}_urls
 
 urlpatterns = [
     # ## DO NOT TOUCH
@@ -53,6 +56,23 @@ urlpatterns = [
     # Users API version
     url(r'^users/', include(users_urls)),
 
+    url(r'^api-schema/{{ project_name }}/$',
+        get_schema_view(title="{{ project_name | capfirst }} API",
+                        patterns=[url(r'^{{ project_name }}/',
+                                      include({{ project_name }}_urls))])),
+
+    # {{ project_name | capfirst }} API version
+    url(r'^{{ project_name }}/', include({{ project_name }}_urls)),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+
+        # For django versions before 2.0:
+        # url(r'^__debug__/', include(debug_toolbar.urls)),
+
+    ] + urlpatterns
 
 cache_registry.autodiscover()

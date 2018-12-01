@@ -166,6 +166,30 @@ WARNING Maybe te field has been already defined in the schema. Cause: Error from
 ...
 ```
 
+### Generatic the static files
+
+We have some django extensions and the debug toolbar installed in DEBUG mode. In order to them work we need to generate the static files.
+
+```
+$ python manage.py collectstatic
+``` 
+
+The output should be something like:
+
+```
+You have requested to collect static files at the destination
+location as specified in your settings:
+
+    /...../myproject/static
+
+This will overwrite existing files!
+Are you sure you want to do this?
+
+Type 'yes' to continue, or 'no' to cancel: yes
+
+0 static files copied to '/..../myproject/static', 184 unmodified.
+```
+
 ### Setup the admin user
 
 Let's create the admin user with its own auth token

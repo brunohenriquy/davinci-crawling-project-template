@@ -5,7 +5,8 @@ import logging
 from datetime import datetime
 import uuid
 
-from caravaggio_rest_api.dse.models import CustomDjangoCassandraModel
+from caravaggio_rest_api.dse.models import \
+    CustomDjangoCassandraModel, KeyEncodedMap
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -49,6 +50,32 @@ class {{ project_name|capfirst }}Resource(CustomDjangoCassandraModel):
 
     long_description = columns.Text()
 
+    # The date when the company was founded
+    foundation_date = columns.Date()
+
+    # Country of the company
+    # ISO 3166-1 alpha 3 code
+    country_code = columns.Text(min_length=3, max_length=3)
+
+    # A list of specialties of the company
+    specialties = columns.List(value_type=columns.Text)
+
+
+    # A field that represent a map of key-value
+    # We use caravaggio KeyEncodedMap that appends the field name
+    # to each of the keys in order to make them indexable by the
+    # Search Indexer.
+    websites = KeyEncodedMap(
+        key_type=columns.Text, value_type=columns.Text)
+
+    # A field that represents a raw JSON content
+    extra_data = columns.Text()
+
+    latitude = columns.Float()
+    longitude = columns.Float()
+
+    coordinates = columns.Text()
+
     class Meta:
         get_pk_field = "_id"
 
@@ -66,3 +93,9 @@ class {{ project_name|capfirst }}Resource(CustomDjangoCassandraModel):
 def pre_save_{{ project_name|lower }}_resource(
         sender, instance=None, using=None, update_fields=None, **kwargs):
     instance.updated_at = datetime.utcnow()
+
+    # Convert the latitude and longitude into a Geo Point in text
+    # This is the field Solr understands and can index
+    if instance.longitude and instance.latitude:
+        instance.coordinates = "{0},{1}".format(
+            instance.latitude, instance.longitude)
