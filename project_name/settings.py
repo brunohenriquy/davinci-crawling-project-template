@@ -426,7 +426,9 @@ THROTTLED_VIEWS = [
     "UserViewSet",
 
     # Your ViewSets should be declared here
-    "{{ project_name | capfirst }}ResourceViewSet", "{{ project_name | capfirst }}ResourceSearchViewSet"
+    "{{ project_name | capfirst }}ResourceViewSet",
+    "{{ project_name | capfirst }}ResourceSearchViewSet",
+    "{{ project_name | capfirst }}ResourceGEOSearchViewSet"
 ]
 
 # Masters

@@ -63,7 +63,6 @@ class {{ project_name|capfirst }}Resource(CustomDjangoCassandraModel):
     # A list of specialties of the company
     specialties = columns.List(value_type=columns.Text)
 
-
     # A field that represent a map of key-value
     # We use caravaggio KeyEncodedMap that appends the field name
     # to each of the keys in order to make them indexable by the

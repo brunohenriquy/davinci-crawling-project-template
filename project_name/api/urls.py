@@ -17,7 +17,9 @@ Including another URLconf
 from django.conf.urls import url, include
 
 from {{ project_name }}.api.views import \
-    {{project_name | capfirst}}ResourceViewSet, {{ project_name|capfirst }}ResourceSearchViewSet
+    {{project_name | capfirst}}ResourceViewSet, \
+    {{ project_name|capfirst }}ResourceSearchViewSet, \
+    {{ project_name | capfirst }}ResourceGEOSearchViewSet
 
 from rest_framework import routers
 
@@ -28,6 +30,10 @@ api_{{ project_name | upper }} = routers.DefaultRouter()
 api_{{ project_name | upper }}.register(r'{{ project_name }}/search',
                         {{project_name | capfirst}}ResourceSearchViewSet,
                         base_name="{{ project_name }}-search")
+
+api_{{ project_name | upper }}.register(r'{{ project_name }}/geosearch',
+                        {{project_name | capfirst}}ResourceGEOSearchViewSet,
+                        base_name="{{ project_name }}-geosearch")
 
 api_{{ project_name | upper }}.register(r'{{ project_name }}',
                         {{project_name | capfirst}}ResourceViewSet,
