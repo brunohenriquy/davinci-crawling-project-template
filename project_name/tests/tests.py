@@ -173,11 +173,11 @@ class GetAllTest(CaravaggioBaseTest):
 
         self.assertEqual(len(response.data["fields"]["crawl_param"]), 2)
         self.assertEqual(response.data[
-                             "fields"]["crawl_param"][0]["text"], 1)
+                             "fields"]["crawl_param"][0]["text"], '1')
         self.assertEqual(response.data[
                              "fields"]["crawl_param"][0]["count"], 1)
         self.assertEqual(response.data[
-                             "fields"]["crawl_param"][1]["text"], 2)
+                             "fields"]["crawl_param"][1]["text"], '2')
         self.assertEqual(response.data[
                              "fields"]["crawl_param"][1]["count"], 1)
 
