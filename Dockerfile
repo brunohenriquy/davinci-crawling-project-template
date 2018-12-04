@@ -1,7 +1,7 @@
 FROM gcr.io/google-appengine/python
 
-# We need the Python 3.6 environment
-LABEL python_version=python3.6
+# We need the Python 3.7 environment
+LABEL python_version=python3.7
 
 ENV SECRET_KEY "secret-key"
 
@@ -9,11 +9,11 @@ ENV STATIC_URL "/static/"
 
 ENV DEBUG "False"
 
+ENV DSE_SUPPORT "True"
+
 ENV THROTTLE_ENABLED "True"
 
-ENV COMPRESS_ENABLED "True"
-ENV COMPRESS_OFFLINE "True"
-
+ENV SECURE_SSL_HOST ""
 ENV SECURE_SSL_REDIRECT "True"
 
 ENV GOOGLE_ANALYTICS_ID ""
@@ -76,12 +76,26 @@ RUN apt-get update && apt-get install -yq \
 
 # Create a virtualenv for dependencies. This isolates these packages from
 # system-level packages.
-RUN virtualenv --no-download /env -p python3.6
+RUN virtualenv --no-download /env -p python3.7
 
 # Setting these environment variables are the same as running
 # source /env/bin/activate.
 ENV VIRTUAL_ENV /env
 ENV PATH /env/bin:$PATH
+
+# Update the pip
+RUN pip install --upgrade pip
+
+# Add unstable repo to allow us to access latest GDAL builds
+RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
+RUN apt-get update
+
+# Install GDAL dependencies
+RUN apt-get -t unstable install -y --allow-unauthenticated libgdal-dev g++
+
+# Update C env vars so compiler can find gdal
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # Copy the application's requirements.txt and run pip to install all
 # dependencies into the virtualenv.

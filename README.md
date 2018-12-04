@@ -239,3 +239,196 @@ python manage.py crawl myproject \
     --local-dir "fs:///data/my_crawler/local"
 ```
 
+## Build the Docker image
+
+If we want to launch the crawler/s as docker containers we will need to generate its docker image.
+
+```
+$ docker build -t preseries.com/davinci_crawler/myproject:0.1 .
+```
+
+## Run the web application using Docker
+
+The project have been configured to run inside a docker container and Google APP Engine. 
+
+The container is auto-sufficient, it starts the gunicorn workers, and the pgbouncer proxy for PostgreSQL.
+
+The unique required external services are:
+
+- Redis Server (we can start a server using docker: `docker run -d --name myproject-redis -p 6379:6379 redis:3.0`)
+- PostgreSQL Server (using the `CloudSQL Proxy`, a local PostgreSQL server with or without docker, or similar)
+- DataStax Enterprise or Cassandra Cluster (using production cluster, a local cluster (CCM), or similar)
+
+To build the image we only need to execute the command:
+
+```
+docker build -t gcr.io/centering-badge-212119/myproject:0.1 .
+```
+
+After the build, if you want to remove all the intermediate images that docker generates, you can run the following command:
+
+```
+$ docker rmi $(docker images -f "dangling=true" -q)
+
+```
+
+We can configure our container at start setting values for some environment variables. 
+
+Some of these variables configure the access to the external services commented before.
+
+These are all the available environment variables we can use to customize the server:
+
+- `SECRET_KEY`: the secret key used to generate csrf tokens and secure your forms, 
+for generate authentication tokens, and secured cookies.
+
+- `DSE_SUPPORT`: are we working using a DataStax Enterprise Cluster?
+
+- `DEBUG`: if we want to start the Django server in Debug mode
+
+- `THROTTLE_ENABLED`: if we activate the api throttling mechanism
+
+- `SECURE_SSL_REDIRECT`: are we executing the sever through SSL? (https)
+- `SECURE_SSL_HOST`: the SSL host name
+ 
+- `STATIC_URL`: the url to the static resources. By default we use the resources inside the 
+image (nginx). In production, for instance, we will use th GS bucket. 
+Ex.`https://storage.googleapis.com/static-sky/static/`
+
+- `REDIS_HOST_PRIMARY`: the host with a Redis server running on it
+- `REDIS_PORT_PRIMARY`: the port at which the Redis server is listening for connections
+- `REDIS_PASS_PRIMARY`: the password to use when connecting to the Redis server 
+
+- `DB_HOST`: the host with the PostgreSQL server running on it 
+- `DB_PORT`: the port at which the PostfreSQL server is listening for connections
+- `DB_USER`: the user to use when connecting to the PostgreSQL server
+- `DB_PASSWORD`: the password of the user we use to connect to the PostgreSL server
+
+- `CASSANDRA_DB_HOST`: the host with the PostgreSQL server running on it 
+- `CASSANDRA_DB_NAME`: the port at which the PostfreSQL server is listening for connections
+- `CASSANDRA_DB_USER`: the user to use when connecting to the PostgreSQL server
+- `CASSANDRA_DB_PASSWORD`: the password of the user we use to connect to the PostgreSL server
+- `CASSANDRA_DB_STRATEGY`: the password of the user we use to connect to the PostgreSL server
+- `CASSANDRA_DB_REPLICATION`: the password of the user we use to connect to the PostgreSL server
+
+- `HAYSTACK_URL`: the URL that give us access to the DSE/Solr service to execute queries directly into Solr.
+- `HAYSTACK_ADMIN_URL`: the Admin URL to the DSE/Solr service
+
+- `GOOGLE_ANALYTICS_ID`: our Google Analytics ID
+
+- `ENV EMAIL_HOST_USER`: email user to use when sending emails
+- `ENV EMAIL_HOST_PASSWORD`: the password of the user used to send emails
+
+
+A `environment.sh.template` can be found at the root of the project. You can rename the file to a normal shell file (.sh) and customize the values of the variables based on your own environment.
+
+Cassandra cluster (or DSE) is usually working as a cluster in your host machine using maybe the CCM utility, not using docker. For that reason we need to create aliases to the `lo` network IPs to IPs that Docker can communicate with inside the containers.
+
+The official docs of Docker, makes reference to an special IP This is the
+IP that was referred to the official docs of docker.
+
+This could be an example of how to start the server taking the following
+assumptions into consideration:
+
+- We have the CloudSQL Proxy service started. It registers the server in the ip
+`10.200.10.1`and port `5433`.
+- A Redis 3.0 server running as a container in docker listening at the standard port `6379`.
+- The PreSeries API (Apian server) running in production and listening at `https://preseries.io`.  
+
+To allow access from the sky container to the host PostgreSQL database set by
+the CouldSQL Proxy we will need to do some things.
+
+- We need to create a new lo0 IP address 10.200.10.1 to the Mac. This is the
+IP that was referred to the official docs of docker.
+
+```
+sudo ifconfig lo0 alias 10.200.10.1/24
+```
+
+- We can check the new IP:
+
+```
+$ ifconfig
+lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 16384
+	options=1203<RXCSUM,TXCSUM,TXSTATUS,SW_TIMESTAMP>
+	inet 127.0.0.1 netmask 0xff000000 
+	inet6 ::1 prefixlen 128 
+	inet6 fe80::1%lo0 prefixlen 64 scopeid 0x1 
+	inet 10.200.10.1 netmask 0xffffff00 
+	nd6 options=201<PERFORMNUD,DAD>
+```
+
+- Once we have the IP ready we start the SQLCloud Proxy attached to this IP:
+
+```
+$ cloud_sql_proxy -instances=centering-badge-212119:europe-west1:sky-pre-s=tcp:10.200.10.1:5433
+2018/08/29 19:34:02 Listening on 10.200.10.1:5433 for centering-badge-212119:europe-west1:sky-pre-s
+2018/08/29 19:34:02 Ready for new connections
+```
+
+Now we are ready to start the service:
+
+```
+docker run -d --link=redis_preseries_db:redis \
+    -p 8080:8080 \ 
+    -e REDIS_HOST_PRIMARY='redis' \
+    -e SKY_DB_HOST='10.200.10.1' \
+    -e SKY_DB_PORT=5433 \
+    -e DEBUG=False \
+    -e COMPRESS_ENABLED=True \
+    -e COMPRESS_OFFLINE=True \
+    -e STATIC_URL="https://storage.googleapis.com/static-sky/static/" \
+    --name sky \
+    gcr.io/centering-badge-212119/sky:v2018-09
+```
+
+We can check the startup logs running the following command:
+
+```
+docker logs -f sky
+```
+
+At this moment we should have `gunicorn` listening at the `8000` port, 
+a `daphne` server at `9000`, and the `nginx` at `8080`.
+
+We can open a browser and navigate to the following url:
+
+```
+http://localhost:8080
+```
+
+__IMPORTANT__: We can use the environment variables to play with different production environments.
+For instance, we can start the server in mode `Debug=True` and without `Compression=Fale` 
+to debug the application simulating a production environment. We need to be careful with 
+variables like the `Google Analytics ID`, if we use the production ID for testing or
+developing purposes we will damage the real statistics.
+
+## Deploy into production
+
+To do the deployment we use the `bin/deploy.sh` script. In this script we will
+find all the logic behind a deployment. Basically, the steps are done in the 
+script are:
+
+1. Prepare a `gs bucket` (Google Storage) to upload all the static files (`static-sky`).
+2. Give public access to the `gs bucket`. 
+3. Configure `CORS` to allow access to the static files from different origins
+4. Prepare the production settings.py, setting the correct `STATIC_URL` 
+for production (that uses `https://storage.googleapis.com/static-sky/static/`), the
+`DEBUG` to `False`, the `COMPRESS_ENABLED` to `True`, etc.
+5. Compile the Django i18n message files
+6. Collect the statics to put them into the `/static` folder
+7. Compress the files
+8. Copy (or rsync) the static file into the `gs` bucket.
+9. Prepare the `requirements.txt` file using the `requirements.txt.template` file and 
+making substitutions of the Github credentials (some dependencies are private).
+ 
+The script also accepts some arguments:
+
+- `-p, --project-name`: the id of the google project where we want to deploy
+ the application.
+- `-v, --version`: the version to use for the application we want to deploy. 
+GAE allows us to manage multiple versions of our application.
+- `-t, --type`: the GAE deployment environment to use. Today only `flex`
+ deployments are allowed, we hope we can deploy the application in a
+ standard environment soon
+- `-d, --debug`: if we want to deploy the application with debug enabled. 
+

@@ -40,6 +40,8 @@ MANAGERS = ADMINS
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "dev@domain.com")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "***")
 
+DSE_SUPPORT = os.getenv("DSE_SUPPORT", "True") == "True"
+
 # SECURITY WARNING: App Engine's security features ensure that it is
 # safe to have ALLOWED_HOSTS = ['*'] when the app is deployed. If you
 # deploy a Django app not on App Engine, make sure to set an appropriate
@@ -54,10 +56,9 @@ if DEBUG:
             '127.0.0.1'
         ]
 
+# Security
 SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', "False") == "True"
 USE_X_FORWARDED_HOST = SECURE_SSL_REDIRECT
-
-# Security
 SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT
 SECURE_BROWSER_XSS_FILTER = SECURE_SSL_REDIRECT
 SECURE_CONTENT_TYPE_NOSNIFF = SECURE_SSL_REDIRECT
@@ -66,9 +67,8 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_REDIRECT_EXEMPT = []
 SECURE_SSL_HOST = os.getenv('SECURE_SSL_HOST', None)
 SECURE_SSL_REDIRECT = SECURE_SSL_REDIRECT
-SECURE_PROXY_SSL_HEADER = (
-    ('HTTP_X_FORWARDED_PROTO', 'https')
-)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO',
+                           "https" if SECURE_SSL_REDIRECT else "http")
 
 # Application definition
 INSTALLED_APPS = [

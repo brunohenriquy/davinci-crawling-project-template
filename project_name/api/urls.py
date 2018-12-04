@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import url, include
 
 from {{ project_name | lower }}.api.views import \
@@ -27,17 +28,18 @@ from rest_framework import routers
 
 api_{{ project_name | upper }} = routers.DefaultRouter()
 
-api_{{ project_name | upper }}.register(r'{{ project_name | lower }}/search',
-                        {{ project_name | capfirst }}ResourceSearchViewSet,
-                        base_name="{{ project_name | lower }}-search")
+if settings.DSE_SUPPORT:
+    api_{{ project_name | upper }}.register(r'{{ project_name | lower }}/search',
+                            {{ project_name | capfirst }}ResourceSearchViewSet,
+                            base_name="{{ project_name | lower }}-search")
 
-api_{{ project_name | upper }}.register(r'{{ project_name | lower }}/search/facets',
-                        {{ project_name | capfirst }}ResourceSearchViewSet,
-                        base_name="{{ project_name | lower }}-search-facets")
+    api_{{ project_name | upper }}.register(r'{{ project_name | lower }}/search/facets',
+                            {{ project_name | capfirst }}ResourceSearchViewSet,
+                            base_name="{{ project_name | lower }}-search-facets")
 
-api_{{ project_name | upper }}.register(r'{{ project_name }}/geosearch',
-                        {{ project_name | capfirst }}ResourceGEOSearchViewSet,
-                        base_name="{{ project_name | lower }}-geosearch")
+    api_{{ project_name | upper }}.register(r'{{ project_name }}/geosearch',
+                            {{ project_name | capfirst }}ResourceGEOSearchViewSet,
+                            base_name="{{ project_name | lower }}-geosearch")
 
 api_{{ project_name | upper }}.register(r'{{ project_name }}',
                         {{ project_name | capfirst }}ResourceViewSet,
