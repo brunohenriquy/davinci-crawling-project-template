@@ -35,7 +35,7 @@ Once the previous services are ready, we can proceed with the installation.
 
 ## How to create a new project
 
-Follow the next instructions to create a new crawler based on this project template:
+Follow the next instructions to create a new crawling project with one crawler:
 
 ```
 $ conda create -n myproject pip python=3.7
@@ -44,13 +44,18 @@ $ conda activate myproject
 $ pip install django>=2
 
 $ django-admin.py startproject \
-  --template=https://github.com/preseries/davinci-crawling-template-project/archive/master.zip \
+  --template=https://github.com/preseries/davinci-crawling-project-template/archive/master.zip \
   --name=Dockerfile \
   --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
   myproject
   
 $ cd myproject
 
+$ python manage.py startapp \
+   --template=https://github.com/preseries/davinci-crawling-app-template/archive/master.zip \
+   --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
+   twitter
+   
 $ python setup.py develop
 ```
 
@@ -58,6 +63,7 @@ __NOTE__: by default we are using the `dse-driver` to connect to cassandra or Da
 
 __NOTE__: the installation of the dependencies will take some time because the `dse-driver` or `cassandra-driver` has to be compiled.
 
+We can add as many crawlers as we want.
 
 ### Test crawler
 
