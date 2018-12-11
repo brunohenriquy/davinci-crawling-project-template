@@ -59,6 +59,7 @@ if DEBUG:
 # Security
 SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', "False") == "True"
 USE_X_FORWARDED_HOST = SECURE_SSL_REDIRECT
+CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT
 SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT
 SECURE_BROWSER_XSS_FILTER = SECURE_SSL_REDIRECT
 SECURE_CONTENT_TYPE_NOSNIFF = SECURE_SSL_REDIRECT
@@ -90,9 +91,12 @@ INSTALLED_APPS = [
     'rest_framework_cache',
     'rest_framework_swagger',
 
+    'compressor',
+
     'haystack',
     'caravaggio_rest_api',
     'davinci_crawling',
+
     # 'davinci_crawling.example.bovespa',
     '{{ project_name | lower }}'
 ]
@@ -241,42 +245,89 @@ except ImportError:
 
 models.DEFAULT_KEYSPACE = CASSANDRA_DB_NAME
 
-# Running on production App Engine, so connect to Google Cloud SQL using
-# the unix socket at /cloudsql/<your-cloudsql-connection string>
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-    },
-    'cassandra': {
-        'ENGINE': 'django_cassandra_engine',
-        'NAME': CASSANDRA_DB_NAME,
-        'TEST_NAME': "test_{}".format(CASSANDRA_DB_NAME),
-        'HOST': CASSANDRA_DB_HOST,
-        'USER': CASSANDRA_DB_USER,
-        'PASSWORD': CASSANDRA_DB_PASSWORD,
-        'OPTIONS': {
-            'replication': {
-                'strategy_class': CASSANDRA_DB_STRATEGY,
-                'replication_factor': CASSANDRA_DB_REPLICATION
-            },
-            'connection': {
-                'consistency': ConsistencyLevel.LOCAL_ONE,
-                'retry_connect': True
-                # + All connection options for cassandra.cluster.Cluster()
-            },
-            'session': {
-                'default_timeout': 10,
-                'default_fetch_size': 10000
-                # + All options for cassandra.cluster.Session()
+# Database
+# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+if os.getenv("GAE_SERVICE", ""):
+    # The docker container starts a PGBouncer server in local to manage
+    # the pool of connections. We need to connect to the local pgbounce
+    # server
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            "HOST": "127.0.0.1",
+            "PORT": "6543",
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': DB_PASSWORD,
+        },
+        'cassandra': {
+            'ENGINE': 'django_cassandra_engine',
+            'NAME': CASSANDRA_DB_NAME,
+            'TEST_NAME': "test_{}".format(CASSANDRA_DB_NAME),
+            'HOST': CASSANDRA_DB_HOST,
+            'USER': CASSANDRA_DB_USER,
+            'PASSWORD': CASSANDRA_DB_PASSWORD,
+            'OPTIONS': {
+                'replication': {
+                    'strategy_class': CASSANDRA_DB_STRATEGY,
+                    'replication_factor': CASSANDRA_DB_REPLICATION
+
+                    # 'strategy_class': 'NetworkTopologyStrategy',
+                    # 'datacenter1': N1,
+                    # ...,
+                    # 'datacenterN': Nn
+                },
+                'connection': {
+                    'consistency': ConsistencyLevel.LOCAL_ONE,
+                    'retry_connect': True
+                    # + All connection options for cassandra.cluster.Cluster()
+                },
+                'session': {
+                    'default_timeout': 10,
+                    'default_fetch_size': 10000
+                    # + All options for cassandra.cluster.Session()
+                }
             }
         }
     }
-}
+
+else:
+    # Running on production App Engine, so connect to Google Cloud SQL using
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'HOST': DB_HOST,
+            'PORT': DB_PORT,
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': DB_PASSWORD,
+        },
+        'cassandra': {
+            'ENGINE': 'django_cassandra_engine',
+            'NAME': CASSANDRA_DB_NAME,
+            'TEST_NAME': "test_{}".format(CASSANDRA_DB_NAME),
+            'HOST': CASSANDRA_DB_HOST,
+            'USER': CASSANDRA_DB_USER,
+            'PASSWORD': CASSANDRA_DB_PASSWORD,
+            'OPTIONS': {
+                'replication': {
+                    'strategy_class': CASSANDRA_DB_STRATEGY,
+                    'replication_factor': CASSANDRA_DB_REPLICATION
+                },
+                'connection': {
+                    'consistency': ConsistencyLevel.LOCAL_ONE,
+                    'retry_connect': True
+                    # + All connection options for cassandra.cluster.Cluster()
+                },
+                'session': {
+                    'default_timeout': 10,
+                    'default_fetch_size': 10000
+                    # + All options for cassandra.cluster.Session()
+                }
+            }
+        }
+    }
 # [END db_setup]
 
 # Password validation
@@ -357,10 +408,50 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 # STATICFILES_STORAGE = \
 #    'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Statics Compression settings
+# Set COMPRESS_ENABLED as `False` for development and debug and `True` for
+# production
+COMPRESS_ENABLED = os.getenv("COMPRESS_ENABLED", "False") == "True"
+# COMPRESS_OFFLINE:
+#   - False: It needs a cache service to check if compress or not the assets
+#   - True: No cache service needed but you have to compress the assets before.
+#           Use `python manage.py compress` for compress the assets.
+#           If you're going to serve the assets (compressed or not) with
+#           Nginx you have to use `python manage.py collectstatic` for
+#           collect and copy the assets in `./web/static/` which is mapped
+#           in Nginx as statics folder.
+COMPRESS_OFFLINE = os.getenv("COMPRESS_OFFLINE", "False") == "True"
+COMPRESS_OFFLINE_CONTEXT = {
+    'STATIC_URL': STATIC_URL
+}
+
+COMPRESS_URL = STATIC_URL
+COMPRESS_ROOT = os.path.join(BASE_DIR + '/static/')
+COMPRESS_OUTPUT_DIR = 'compressed'
+COMPRESS_CSS_HASHING_METHOD = 'content'
+
+# TODO: Try to use YUICompressor (and the YUIxxxFilters)
+COMPRESS_CSS_FILTERS = [
+    'sky.compress_filters.CustomCssAbsoluteFilter',
+    'compressor.filters.cssmin.CSSMinFilter',
+    # 'compressor.filters.yui.YUICSSFilter'
+]
+
+COMPRESS_JS_FILTERS = [
+    'compressor.filters.jsmin.JSMinFilter',
+    # 'compressor.filters.jsmin.SlimItFilter',
+    # 'compressor.filters.closure.ClosureCompilerFilter',
+    # 'compressor.filters.yui.YUIJSFilter'
+]
+
+COMPRESS_CLOSURE_COMPILER_ARGUMENTS = ''
+# End Statics Compression settings
 
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10,

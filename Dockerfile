@@ -19,14 +19,14 @@ ENV SECURE_SSL_REDIRECT "True"
 ENV GOOGLE_ANALYTICS_ID ""
 
 ENV DB_HOST "127.0.0.1"
-ENV DB_PORT 3306
+ENV DB_PORT 5432
 ENV DB_NAME "{{ project_name | lower }}"
 ENV DB_USER "{{ project_name | lower }}"
-ENV DB_PASS "{{ project_name | lower }}"
+ENV DB_PASSWORD "{{ project_name | lower }}"
 
 ENV CASSANDRA_DB_HOST "127.0.0.1,127.0.0.2,127.0.0.3"
 ENV CASSANDRA_DB_NAME "{{ project_name | lower }}"
-ENV CASSANDRA_DB_USER "{{ project_name | lower }}"
+ENV CASSANDRA_DB_USER "cassandra"
 ENV CASSANDRA_DB_PASSWORD "{{ project_name | lower }}"
 ENV CASSANDRA_DB_STRATEGY "NetworkTopologyStrategy"
 ENV CASSANDRA_DB_REPLICATION "3"
@@ -76,12 +76,37 @@ RUN apt-get update && apt-get install -yq \
 
 # Create a virtualenv for dependencies. This isolates these packages from
 # system-level packages.
-RUN virtualenv --no-download /env -p python3.7
+RUN virtualenv --no-download /env -p /opt/python3.7/bin/python3.7
 
 # Setting these environment variables are the same as running
 # source /env/bin/activate.
 ENV VIRTUAL_ENV /env
 ENV PATH /env/bin:$PATH
+
+# Install PhantomJS runtime dependencies
+# https://hub.docker.com/r/wernight/phantomjs/
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        bzip2 \
+        libfontconfig \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PhantomJS official dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        curl \
+    && mkdir /tmp/phantomjs \
+    && curl -L https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
+           | tar -xj --strip-components=1 -C /tmp/phantomjs \
+    && cd /tmp/phantomjs \
+    && mv bin/phantomjs /usr/local/bin \
+    && cd \
+    && apt-get purge --auto-remove -y \
+        curl \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/lib/apt/lists/*
 
 # Update the pip
 RUN pip install --upgrade pip

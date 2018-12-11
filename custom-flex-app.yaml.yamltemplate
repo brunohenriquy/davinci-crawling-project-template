@@ -3,7 +3,7 @@ runtime: custom
 env: flex
 entrypoint: ./docker-entrypoint.sh
 
-service: sky
+service: {{ project_name | lower }}
 
 runtime_config:
   python_version: 3
@@ -21,15 +21,15 @@ resources:
   disk_size_gb: 50
 
 network:
-  instance_tag: {{ myproject }}-service
+  instance_tag: {{ project_name | lower }}-service
 
 beta_settings:
     cloud_sql_instances: [CLOUDSQL_INSTANCE_ID]
 
 env_variables:
-  SECRET_KEY: [KEY]
+  SECRET_KEY: [SECRET_KEY]
 
-  STATIC_URL: https://storage.googleapis.com/[GS_BUCKET_PREFIX]-${GAE_VERSION}/static/
+  STATIC_URL: https://storage.googleapis.com/static-{{ project_name | lower }}-${GAE_VERSION}/static/
 
   DEBUG: False
 
@@ -44,27 +44,27 @@ env_variables:
   GOOGLE_ANALYTICS_ID: [ID]
 
   # We are using the local pgbouncer connection pool
-  DB_HOST: [CLOUDSQL_INSTANCE_ID]
-  DB_PORT: [DB_PORT]
-  DB_USER: [DB_USER]
+  DB_HOST: [CLOUDSQL_INSTANCE_ID] # dotted-ranger-212213:europe-west2:postgres-db
+  DB_PORT: 5432
+  DB_USER: {{ project_name | lower }}
   DB_PASSWORD: [DB_PASSWORD]
 
-  HAYSTACK_URL: [HAYSTACK_URL]
-  HAYSTACK_ADMIN_URL: [HAYSTACK_ADMIN_URL]
+  HAYSTACK_URL: [HAYSTACK_URL] # Ex. http://USER:PASS@HOST:8983/solr
+  HAYSTACK_ADMIN_URL: [HAYSTACK_ADMIN_URL] # Ex. http://USER:PASS@HOST:8983/solr/admin/cores
 
-  CASSANDRA_DB_HOST: [CASSANDRA_DB_HOST]
-  CASSANDRA_DB_NAME: [CASSANDRA_DB_NAME]
-  CASSANDRA_DB_USER: [CASSANDRA_DB_USER]
+  CASSANDRA_DB_HOST: [CASSANDRA_DB_HOSTS] # Ex. 10.154.0.2,10.154.0.3,10.154.0.4
+  CASSANDRA_DB_NAME: {{ project_name | lower }}
+  CASSANDRA_DB_USER: cassandra
   CASSANDRA_DB_PASSWORD: [CASSANDRA_DB_PASSWORD]
-  CASSANDRA_DB_STRATEGY: [CASSANDRA_DB_STRATEGY]
-  CASSANDRA_DB_REPLICATION: [CASSANDRA_DB_REPLICATION]
+  CASSANDRA_DB_STRATEGY: SimpleStrategy
+  CASSANDRA_DB_REPLICATION: 3
 
-  REDIS_HOST_PRIMARY: [HOST]
-  REDIS_PORT_PRIMARY: [PORT]
-  REDIS_PASS_PRIMARY: [PASWORD]
+  REDIS_HOST_PRIMARY: [REDIS_HOST] # Ex. redis
+  REDIS_PORT_PRIMARY: 6379
+  REDIS_PASS_PRIMARY: [REDIS_PASWORD]
 
-  EMAIL_HOST_USER: [USER]
-  EMAIL_HOST_PASSWORD: [PASSWORD]
+  EMAIL_HOST_USER: [EMAIL_USER]
+  EMAIL_HOST_PASSWORD: [EMAIL_PASSWORD]
 
 # Google App Engine limits application deployments to 10,000 uploaded files per
 # version. The skip_files section allows us to skip virtual environment files

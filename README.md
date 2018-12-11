@@ -1,20 +1,22 @@
 # Django DaVinci Crawler project template
 
-This is a simple DaVinci project template with my preferred setup. 
+This is a simple DaVinci Crawling project template with the preferred setup. 
+
+We can use this project template to implement crawlers or to setup a project with multiple crawlers all together in the same RESTful API. 
 
 This template has also support for Docker and is also optimized for Google App Engine deployments.
 
 ## Features
 
-- Caravaggio REST API Framework (Django 2.0+, DRF, DataStax/Cassandra)
-- DaVinci Crawling Framwework 
+- [Caravaggio REST API Framework](https://github.com/preseries/django-caravaggio-rest-api) (Django 2.0+, DRF, DataStax/Cassandra)
+- [DaVinci Crawling Framwework](https://github.com/preseries/django-davinci-crawling) 
 - PostgreSQL database support with psycopg2.
 - DataStax database support with DSE Driver
-- Development, Staging and Production settings with django-configurations.
 - Get value insight and debug information while on Development with django-debug-toolbar.
 - Collection of custom extensions with django-extensions.
 - HTTPS and other security related settings on Staging and Production.
-- Google App Engine deployment support
+- Docker image
+- Google App Engine deployment support (custom environment)
 
 
 ## Environment Setup

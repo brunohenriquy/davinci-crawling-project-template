@@ -16,30 +16,31 @@ export GOOGLE_ANALYTICS_ID=
 # For Docker
 # export DB_HOST=postgres
 export DB_HOST=127.0.0.1
-export DB_PORT=6543
-export DB_NAME={{ project_name | lower }}
-export DB_USER={{ project_name | lower }}
-export DB_PASS={{ project_name | lower }}
+export DB_PORT=5432
+export DB_NAME=myproject5
+export DB_USER=myproject5
+export DB_PASSWORD=myproject5
 
 # For Docker
 # export CASSANDRA_DB_HOST=10.200.10.1,10.200.10.2,10.200.10.3
 export CASSANDRA_DB_HOST=127.0.0.1,127.0.0.2,127.0.0.3
-export CASSANDRA_DB_NAME={{ project_name | lower }}
-export CASSANDRA_DB_USER={{ project_name | lower }}
-export CASSANDRA_DB_PASSWORD={{ project_name | lower }}
+export CASSANDRA_DB_NAME=myproject5
+export CASSANDRA_DB_USER=myproject5
+export CASSANDRA_DB_PASSWORD=myproject5
+# export CASSANDRA_DB_STRATEGY=NetworkTopologyStrategy
 export CASSANDRA_DB_STRATEGY=SimpleStrategy
+# export CASSANDRA_DB_REPLICATION=3
 export CASSANDRA_DB_REPLICATION=1
 
 export HAYSTACK_ACTIVE=True
-export HAYSTACK_KEYSPACE={{ project_name | lower }}
-# For Docker
-# export HAYSTACK_URL=http://10.200.10.1:8983/solr
-# export HAYSTACK_ADMIN_URL=http://10.200.10.1:8983/solr/admin/cores
+export HAYSTACK_KEYSPACE=myproject5
+# HAYSTACK_URL: http://<USER>:<PASSWORD>@10.154.0.2:8983/solr
+# HAYSTACK_ADMIN_URL: http://<USER>:<PASSWORD>@10.154.0.2:8983/solr/admin/cores
 export HAYSTACK_URL=http://127.0.0.1:8983/solr
 export HAYSTACK_ADMIN_URL=http://127.0.0.1:8983/solr/admin/cores
 
 # For Docker
-# export DB_HOST=redis
+# export REDIS_HOST_PRIMARY=redis
 export REDIS_HOST_PRIMARY=localhost
 export REDIS_PORT_PRIMARY=6379
 export REDIS_PASS_PRIMARY=

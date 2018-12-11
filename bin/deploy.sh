@@ -11,7 +11,6 @@ PROJECT_NAME=
 CODE_PROJECT_NAME={{ project_name | lower }}
 CODE_PROJECT_VERSION=
 GAE_VERSION=
-GEA_TYPE=flex
 NO_PROMOTE="--no-promote"
 YAML_FILE=
 
@@ -46,91 +45,63 @@ fi
 
 gcloud config set project $PROJECT_NAME
 
-cd $DIRECTORY/../src/preseries/${CODE_PROJECT_NAME}
+cd $DIRECTORY/..
 
-if [ $GEA_TYPE = "flex" ]
-then
-    # Prepare the GS bucket to upload the static files
-	gsutil mb gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
+# The generation of the image takes to long and a DEADLINE_EXCEED happens
+# with the default timeout.
 
-	# Set public access to the GS bucket
-	gsutil defacl set public-read gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
+gcloud config set app/cloud_build_timeout 10000
 
-	# Configure the CORS to allow access to the resources from different origins
-	export GAE_VERSION=$GAE_VERSION
-	envsubst < $DIRECTORY/cors-json-file.json > $DIRECTORY/deploy.cors-json-file.json
-    gsutil cors set $DIRECTORY/deploy.cors-json-file.json gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
-    gsutil cors get gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
+# Prepare the GS bucket to upload the static files
+gsutil mb gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
 
-    OLD_STATIC_URL=$STATIC_URL
-    OLD_COMPRESS_ENABLED=$COMPRESS_ENABLED
-    OLD_COMPRESS_OFFLINE=$COMPRESS_OFFLINE
+# Set public access to the GS bucket
+gsutil defacl set public-read gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
 
-    export STATIC_URL="https://storage.googleapis.com/static-${CODE_PROJECT_NAME}-${GAE_VERSION}/static/"
-    export COMPRESS_ENABLED=True
-    export COMPRESS_OFFLINE=True
+# Configure the CORS to allow access to the resources from different origins
+export GAE_VERSION=$GAE_VERSION
+envsubst < $DIRECTORY/cors-json-file.json > $DIRECTORY/deploy.cors-json-file.json
+gsutil cors set $DIRECTORY/deploy.cors-json-file.json gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
+gsutil cors get gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
 
-    # Generate the locale message files
-    ./compile_messages.sh
-    # Collect all the static files and copy them into the /static folder
-    python manage.py collectstatic --noinput
-    # Clean the old compressed files
-    rm -rf static/compressed
-    # Compress the files
-    python manage.py compress
+OLD_STATIC_URL=$STATIC_URL
+OLD_COMPRESS_ENABLED=$COMPRESS_ENABLED
+OLD_COMPRESS_OFFLINE=$COMPRESS_OFFLINE
 
-    STATIC_URL=$OLD_STATIC_URL
-    COMPRESS_ENABLED=$OLD_COMPRESS_ENABLED
-    COMPRESS_OFFLINE=$OLD_COMPRESS_OFFLINE
+export STATIC_URL="https://storage.googleapis.com/static-${CODE_PROJECT_NAME}-${GAE_VERSION}/static/"
+export COMPRESS_ENABLED=True
+export COMPRESS_OFFLINE=True
 
-    # Sync the GS bucket with the changes in the static files
-    # (including the compressed files)
-	gsutil rsync -R static/ gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}/static
+# Generate the locale message files
+./compile_messages.sh
+# Collect all the static files and copy them into the /static folder
+python manage.py collectstatic --noinput
+# Clean the old compressed files
+rm -rf static/compressed
+# Compress the files
+python manage.py compress
 
-    # Substitution of GITHUB env variables (GITHUB_USERNAME, GITHUB_PASSWORD)
-    envsubst < requirements.txt.template > requirements.txt
+STATIC_URL=$OLD_STATIC_URL
+COMPRESS_ENABLED=$OLD_COMPRESS_ENABLED
+COMPRESS_OFFLINE=$OLD_COMPRESS_OFFLINE
 
-    # Substitutions on the YAML file (for instance GAE_VERSION)
-	envsubst < $YAML_FILE > processed-${YAML_FILE}
+# Sync the GS bucket with the changes in the static files
+# (including the compressed files)
+gsutil rsync -R static/ gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}/static
 
-	# gcloud app deploy flex-app.yaml --log-http --verbosity=debug
-	gcloud app deploy --project $PROJECT_NAME $CODE_PROJECT_VERSION $NO_PROMOTE processed-${YAML_FILE}
-else
-    # Prepare the GS bucket to upload the static files
-    gsutil mb gs://deploy-${CODE_PROJECT_NAME}-${GAE_VERSION}
+# Substitution of GITHUB env variables (GITHUB_USERNAME, GITHUB_PASSWORD)
+envsubst < requirements.txt.template > requirements.txt
 
-	# Configure the CORS to allow access to the resources from different origins
-	export GAE_VERSION=$GAE_VERSION
-	envsubst < cors-json-file.json > deploy.cors-json-file.json
-    gsutil cors set $DIRECTORY/deploy.cors-json-file.json gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
-    gsutil cors get gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}
+# Substitutions on the YAML file (for instance GAE_VERSION)
+envsubst < $YAML_FILE > processed-${YAML_FILE}
 
-    # Substitution of GITHUB env variables (GITHUB_USERNAME, GITHUB_PASSWORD)
-    envsubst < requirements.txt.template > requirements.txt
+# Build the docker image
+docker build -t eu.gcr.io/${PROJECT_NAME}/${CODE_PROJECT_NAME}:${CODE_PROJECT_VERSION} .
 
-    pip install --upgrade -r requirements-vendor.txt -t lib/
+# Upload image to Google
+gcloud docker -- push eu.gcr.io/${PROJECT_NAME}/${CODE_PROJECT_NAME}:${CODE_PROJECT_VERSION}
 
-    OLD_STATIC_URL=$STATIC_URL
-    OLD_COMPRESS_ENABLED=$COMPRESS_ENABLED
-    OLD_COMPRESS_OFFLINE=$COMPRESS_OFFLINE
-
-    export STATIC_URL="https://storage.googleapis.com/static-${CODE_PROJECT_NAME}-${GAE_VERSION}/static/"
-    export COMPRESS_ENABLED=True
-    export COMPRESS_OFFLINE=True
-
-    # Generate the locale message files
-    ./compile_messages.sh
-    # Collect all the static files and copy them into the /static folder
-    python manage.py collectstatic --noinput
-    # Compress the files
-    python manage.py compress
-
-    STATIC_URL=$OLD_STATIC_URL
-    COMPRESS_ENABLED=$OLD_COMPRESS_ENABLED
-    COMPRESS_OFFLINE=$OLD_COMPRESS_OFFLINE
-
-    # Substitutions on the YAML file (for instance GAE_VERSION)
-	envsubst < $YAML_FILE > processed-${YAML_FILE}
-
-    gcloud app deploy --project $PROJECT_NAME --bucket gs://deploy-${CODE_PROJECT_NAME}-${GAE_VERSION} $CODE_PROJECT_VERSION $NO_PROMOTE processed-${YAML_FILE}
-fi
+# gcloud app deploy using the previous image and the processed flex-app.yaml (other available params: --log-http --verbosity=debug)
+gcloud app deploy --project $PROJECT_NAME \
+    --image-url eu.gcr.io/${PROJECT_NAME}/${CODE_PROJECT_NAME}:${CODE_PROJECT_VERSION} \
+    $CODE_PROJECT_VERSION $NO_PROMOTE processed-${YAML_FILE}
