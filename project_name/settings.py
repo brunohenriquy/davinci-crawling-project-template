@@ -760,6 +760,9 @@ DAVINCI_CRAWLERS = {
     #            "family": "cos-stable"
     #        },
     #    },
+    #    "arguments": {
+    #        "--cache-dir": "gs://davinci_cache"
+    #    },
     #    "cron": "*/5 * * * *"
     # },
     "{{ project_name | lower }}": {
@@ -780,6 +783,9 @@ DAVINCI_CRAWLERS = {
                 "project": "cos-cloud",
                 "family": "cos-stable"
             },
+        },
+        "arguments": {
+            "--cache-dir": "gs://davinci_cache"
         },
         "cron": "* * 0 * *"
     }
