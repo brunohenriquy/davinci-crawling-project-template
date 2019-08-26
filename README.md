@@ -54,7 +54,7 @@ $ cd myproject
 $ python manage.py startapp \
    --template=https://github.com/preseries/davinci-crawling-app-template/archive/master.zip \
    --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
-   twitter
+   mycrawler
    
 $ python setup.py develop
 ```
@@ -67,7 +67,12 @@ We can add as many crawlers as we want.
 
 ### Test crawler
 
-If you want to use the Bovespa test crawler that comes with `davinci-crawling`, you should edit the `settings.py file and add davinci_crawling.example.bovespa` to the list of `INSTALLED_APPS`, just after the `davinci_crawling` application.
+To test the crawler we will need to:
+
+- Add the crawler app to the list of INSTALLED_APPS
+- Add the crawler urls to the project urls
+
+If you want to test the Bovespa crawler too that comes with `davinci-crawling`, you should edit the `settings.py file and add davinci_crawling.example.bovespa` to the list of `INSTALLED_APPS`, just after the `davinci_crawling` application.
 
 ```python
 # Application definition
@@ -97,7 +102,29 @@ INSTALLED_APPS = [
     'caravaggio_rest_api',
     'davinci_crawling',
     'davinci_crawling.example.bovespa',
-    'myproject'
+    'myproject',
+    'mycrawler'
+]
+```
+
+And now we can update the `myproject.urls.py` file as shown here:
+
+```
+from mycrawler.api.urls import urlpatterns as mycrawler_urls
+
+....
+
+urlpatterns = [
+    ... 
+    ...
+
+    url(r'^api-schema/mycrawler/$',
+        get_schema_view(title="Mycrawler API",
+                        patterns=[url(r'^mycrawler/',
+                                      include(mycrawler_urls))])),
+
+    # Mycrawler API version
+    url(r'^mycrawler/', include(mycrawler_urls)),   
 ]
 ```
 
@@ -218,6 +245,105 @@ $ curl -H "Content-Type: application/json" -X POST \
     
 {"token":"b10061d0b62867d0d9e3eb4a8c8cb6a068b2f14a","user_id":1,"email":"myproject@preseries.com"}    
 ```
+
+## Deploy the crawling project into Google App Engine
+
+The following section will explain what we need to do in order to deploy our crawling project into GAE.
+
+First, we need to be sure our production environment is up and running. We will need a Google project with the following services ready:
+
+- A DSE cluster 
+- A Redis server
+- A PostgreSQL server
+
+Once these services are ready, we can start the deploy process.
+
+1. We need to create a `myproject` user in PostgreSQL. We will need the password in the 3rd step.
+
+2. Create a `custom-flex-app.yaml` based on the `custom-flex-app.yaml.template`. 
+
+3. Edit the new `custom-flex-app.yaml` and set the correct values for all the environment variables. Ex:
+
+    ```
+    # [START runtime]
+    runtime: custom
+    env: flex
+    entrypoint: ./docker-entrypoint.sh
+    
+    service: harvest
+    
+    runtime_config:
+      python_version: 3
+    
+    automatic_scaling:
+      min_num_instances: 1
+      max_num_instances: 5
+      cool_down_period_sec: 180
+      cpu_utilization:
+        target_utilization: 0.7
+    
+    resources:
+      cpu: 1
+      memory_gb: 1
+      disk_size_gb: 10
+    
+    network:
+      instance_tag: harvest-service
+    
+    beta_settings:
+        cloud_sql_instances: dotted-ranger-212213:europe-west2:postgres-db
+    
+    env_variables:
+      SECRET_KEY: $h5)b@2b4ts8lhzpl0ui@219jc5e%@ppewwd&i^wo1+1nregos
+    
+      STATIC_URL: https://storage.googleapis.com/static-harvest-${GAE_VERSION}/static/
+    
+      DEBUG: False
+    
+      THROTTLE_ENABLED: True
+    
+      SECURE_SSL_HOST: 
+      SECURE_SSL_REDIRECT: True
+    
+      # We are using the local pgbouncer connection pool
+      DB_HOST: dotted-ranger-212213:europe-west2:postgres-db
+      DB_PORT: 5432
+      DB_USER: harvest
+      DB_PASSWORD: sQQE87Nt
+    
+      HAYSTACK_URL: http://cassandra:sQQE87Nt@gasp-datastax-europe-west2-a-1-vm:8983/solr
+      HAYSTACK_ADMIN_URL: http://cassandra:sQQE87Nt@gasp-datastax-europe-west2-a-1-vm:8983/solr/admin/cores
+    
+      CASSANDRA_DB_HOST: gasp-datastax-europe-west2-a-1-vm,gasp-datastax-europe-west2-a-2-vm,gasp-datastax-europe-west2-a-3-vm
+      CASSANDRA_DB_NAME: harvest
+      CASSANDRA_DB_USER: cassandra
+      CASSANDRA_DB_PASSWORD: sQQE87Nt
+      CASSANDRA_DB_STRATEGY: SimpleStrategy
+      CASSANDRA_DB_REPLICATION: 3
+    
+      REDIS_HOST_PRIMARY: redis-vm
+      REDIS_PORT_PRIMARY: 6379
+      REDIS_PASS_PRIMARY: GeeCg1SqY7Lb
+    
+      EMAIL_HOST_USER: info@preseries.com
+      EMAIL_HOST_PASSWORD: 6ZREm4he
+    
+    # Google App Engine limits application deployments to 10,000 uploaded files per
+    # version. The skip_files section allows us to skip virtual environment files
+    # to meet this requirement. The first 5 are the default regular expressions to
+    # skip, while the last one is for all env/ files.
+    skip_files:
+    - ^(.*/)?#.*#$
+    - ^(.*/)?.*~$
+    - ^(.*/)?.*\.py[co]$
+    - ^(.*/)?.*/RCS/.*$
+    - ^(.*/)?\..*$
+    - ^env/.*$
+    # [END runtime]
+    ```
+
+3. 
+
 
 ## Run the crawler
 
