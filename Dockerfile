@@ -43,6 +43,8 @@ ENV REDIS_PASS_PRIMARY ""
 ENV EMAIL_HOST_USER "user"
 ENV EMAIL_HOST_PASSWORD "password"
 
+# ENV PROJECT_DOCKER_IMAGE "eu.gcr.io/dotted-ranger-212213/{{ project_name | lower }}:v0-1-1"
+
 
 # Install Nginx. It will serve all the incomming requests
 RUN apt-get update && apt-get install -yq \
@@ -124,11 +126,22 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # Copy the application's requirements.txt and run pip to install all
 # dependencies into the virtualenv.
+ADD requirements.base.txt /app/requirements.base.txt
+RUN pip install -r /app/requirements.base.txt
+
 ADD requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
 # Add the application source code.
 ADD . /app
+
+# Add the service account file to the container
+ADD $GOOGLE_APPLICATION_CREDENTIALS /app/credentials.json
+
+# Install Cloud-SQL-Proxy
+RUN wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O /app/cloud_sql_proxy \
+    && chmod +x /app/cloud_sql_proxy \
+    && mkdir /cloudsql; chmod 777 /cloudsql
 
 # Run all the services
 CMD ./docker-entrypoint.sh
