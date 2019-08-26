@@ -29,6 +29,7 @@ from django.contrib import admin
 from caravaggio_rest_api.users.urls import urlpatterns as users_urls
 from caravaggio_rest_api.views import CustomAuthToken, get_swagger_view
 
+# from davinci_crawling.example.bovespa.urls import urlpatterns as bovespa_urls
 from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
 
 urlpatterns = [
@@ -55,6 +56,15 @@ urlpatterns = [
 
     # Users API version
     url(r'^users/', include(users_urls)),
+
+    # Bovespa crawler
+    # url(r'^api-schema/bovespa/$',
+    #     get_schema_view(title="Bovespa Crawler Data API",
+    #                     patterns=[url(r'^bovepa/',
+    #                                   include(bovespa_urls))])),
+    #
+    # # API
+    # url(r'^bovespa/', include(bovespa_urls)),
 
     url(r'^api-schema/{{ project_name | lower }}/$',
         get_schema_view(title="{{ project_name | capfirst }} API",

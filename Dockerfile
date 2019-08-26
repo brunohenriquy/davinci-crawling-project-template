@@ -43,7 +43,7 @@ ENV REDIS_PASS_PRIMARY ""
 ENV EMAIL_HOST_USER "user"
 ENV EMAIL_HOST_PASSWORD "password"
 
-# ENV PROJECT_DOCKER_IMAGE "eu.gcr.io/dotted-ranger-212213/{{ project_name | lower }}:v0-1-1"
+ENV PROJECT_DOCKER_IMAGE "eu.gcr.io/dotted-ranger-212213/{{ project_name | lower }}:v0-1-1"
 
 
 # Install Nginx. It will serve all the incomming requests

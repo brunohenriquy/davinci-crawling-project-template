@@ -94,8 +94,11 @@ INSTALLED_APPS = [
     'compressor',
 
     'haystack',
+    # 'django_apscheduler',
+
     'caravaggio_rest_api',
     'davinci_crawling',
+    # 'davinci_crawling.scheduler',
 
     # 'davinci_crawling.example.bovespa',
     '{{ project_name | lower }}'
@@ -152,6 +155,12 @@ WSGI_APPLICATION = '{{ project_name | lower }}.wsgi.application'
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
+if os.getenv('GAE_SERVICE', ''):
+    LOGGING_FILE = "/var/log/{{ project_name | lower }}-debug.log"
+else:
+    LOGGING_FILE = "/data/{{ project_name | lower }}/log/{{ project_name | lower }}-debug.log"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -180,6 +189,14 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'debug_log': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGGING_FILE,
+            'maxBytes': 1024 * 1024 * 100,
+            'backupCount': 1,
+            'formatter': 'verbose'
         }
     },
     'loggers': {
@@ -188,16 +205,46 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'django_apscheduler': {
+            'handlers': ['console', 'debug_log', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django_cassandra_engine': {
+            'handlers': ['console', 'debug_log', 'mail_admins'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'caravaggio_rest_api': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console', 'debug_log', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'davinci_crawling': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console', 'debug_log', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
         },
+        # 'davinci_crawling.scheduler': {
+        #     'handlers': ['console', 'debug_log', 'mail_admins'],
+        #     'level': 'DEBUG',
+        #     'propagate': False,
+        # },
+        # 'davinci_crawling.gcp': {
+        #     'handlers': ['console', 'debug_log', 'mail_admins'],
+        #     'level': 'ERROR',
+        #     'propagate': True,
+        # },
+        'davinci_crawler_bovespa': {
+            'handlers': ['console', 'debug_log', 'mail_admins'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        # 'davinci_crawler_bovespa': {
+        #     'handlers': ['console', 'mail_admins'],
+        #     'level': 'DEBUG',
+        #     'propagate': True,
+        # },
         'davinci_crawler_{{ project_name | lower }}': {
             'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG',
@@ -516,6 +563,11 @@ FACETS_THROTTLE_RATE = "6000/minute"
 THROTTLED_VIEWS = [
     "UserViewSet",
 
+    # Bovespa ViewSets
+    # "BovespaCompanyViewSet", "BovespaCompanySearchViewSet",
+    # "BovespaCompanyFileViewSet", "BovespaCompanyFileSearchViewSet",
+    # "BovespaAccountViewSet", "BovespaAccountSearchViewSet",
+
     # Your ViewSets should be declared here
     "{{ project_name | capfirst }}ResourceViewSet",
     "{{ project_name | capfirst }}ResourceSearchViewSet",
@@ -637,4 +689,98 @@ SWAGGER_SETTINGS = {
         'delete',
         'patch'
     ],
+}
+
+# APSCHEDULER_DATETIME_FORMAT =  "N j, Y, f:s a"  # Default
+
+PROJECT_DOCKER_IMAGE = os.getenv(
+    "PROJECT_DOCKER_IMAGE",
+    "eu.gcr.io/dotted-ranger-212213/{{ project_name | lower }}:v0-0-1")
+
+
+DAVINCI_CRAWLERS_ENV_PARAMS = [
+    "DSE_SUPPORT",
+
+    "CASSANDRA_DB_HOST",
+    "CASSANDRA_DB_NAME",
+    "CASSANDRA_DB_PASSWORD",
+    "CASSANDRA_DB_REPLICATION",
+    "CASSANDRA_DB_STRATEGY",
+    "CASSANDRA_DB_USER",
+
+    "DB_HOST",
+    "DB_NAME",
+    "DB_PASSWORD",
+    "DB_PORT",
+    "DB_USER",
+    "DB_USER",
+
+    "HAYSTACK_ACTIVE",
+    "HAYSTACK_ADMIN_URL",
+    "HAYSTACK_KEYSPACE",
+    "HAYSTACK_URL",
+
+    "REDIS_HOST_PRIMARY",
+    "REDIS_PASS_PRIMARY",
+    "REDIS_PORT_PRIMARY",
+
+    "SECRET_KEY",
+    "SECURE_SSL_HOST",
+    "SECURE_SSL_REDIRECT",
+
+    "STATIC_URL",
+    "THROTTLE_ENABLED",
+
+    "EMAIL_HOST_PASSWORD",
+    "EMAIL_HOST_USER",
+
+    "GAE_SERVICE",
+
+    "GOOGLE_ANALYTICS_ID"
+]
+
+
+DAVINCI_CRAWLERS = {
+    # "bovespa": {
+    #    "deployment": {
+    #        # Google Cloud Platform
+    #        "cloud": "gcp",
+    #        "project": "dotted-ranger-212213", # Sandbox
+    #        "zone": "europe-west2-a",
+    #
+    #        # A list of available machine types can be found here:
+    #        # https://cloud.google.com/compute/docs/machine-types
+    #        "machine-type": "n1-standard-2",
+    #
+    #        # Container - Optimized OS
+    #        # https://cloud.google.com/compute/docs/images?
+    #        #   hl=es-419#os-compute-support
+    #        "image": {
+    #            "project": "cos-cloud",
+    #            "family": "cos-stable"
+    #        },
+    #    },
+    #    "cron": "*/5 * * * *"
+    # },
+    "{{ project_name | lower }}": {
+        "deployment": {
+            # Google Cloud Platform
+            "cloud": "gcp",
+            "project": "dotted-ranger-212213", # Sandbox
+            "zone": "europe-west2-a",
+
+            # A list of available machine types can be found here:
+            # https://cloud.google.com/compute/docs/machine-types
+            "machine-type": "n1-standard-1",
+
+            # Container - Optimized OS
+            # https://cloud.google.com/compute/docs/images?
+            #   hl=es-419#os-compute-support
+            "image": {
+                "project": "cos-cloud",
+                "family": "cos-stable"
+            },
+        },
+        "cron": "* * 0 * *"
+    }
 }
