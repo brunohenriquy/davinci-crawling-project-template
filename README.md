@@ -466,7 +466,7 @@ assumptions into consideration:
 - We have the CloudSQL Proxy service started. It registers the server in the ip
 `10.200.10.1`and port `5433`.
 - A Redis 3.0 server running as a container in docker listening at the standard port `6379`.
-- The PreSeries API (Apian server) running in production and listening at `https://preseries.io`.  
+- The BGDS API (Apian server) running in production and listening at `https://bgds.io`.  
 
 To allow access from the sky container to the host PostgreSQL database set by
 the CouldSQL Proxy we will need to do some things.
