@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Usage: deploy-app.sh [-p project-name] [-v version] [--promote yes] app.yaml
-#        deploy-app.sh -v v2018-05-hotfix-2 --promote yes custom-flex-app.yaml
+# Usage: deploy-app.sh [-p project-name] [-v version] [--promote yes] [--optimized yes] app.yaml
+#        deploy-app.sh -v v2018-05-hotfix-2 --promote yes --optimized yes  custom-flex-app.yaml
 #
 
 DIRECTORY="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -12,6 +12,7 @@ CODE_PROJECT_NAME={{ project_name | lower }}
 CODE_PROJECT_VERSION=
 GAE_VERSION=
 NO_PROMOTE="--no-promote"
+OPTIMIZED="--build-arg optimized=no"
 YAML_FILE=
 
 while :; do
@@ -23,6 +24,8 @@ while :; do
             CODE_PROJECT_VERSION="-v $2"
         ;;
         --promote) NO_PROMOTE=""
+        ;;
+        --optimized) OPTIMIZED="--build-arg optimized=yes"
         ;;
         *)  YAML_FILE=$1
             shift
@@ -42,6 +45,15 @@ then
       echo "The YAML file must be specified"
       exit 2
 fi
+
+export DOCKER_IMAGE="eu.gcr.io/${PROJECT_NAME}/${CODE_PROJECT_NAME}:${GAE_VERSION}"
+
+echo "Project: ${PROJECT_NAME}"
+echo "Code Project: ${CODE_PROJECT_NAME}"
+echo "Code Version: ${CODE_PROJECT_VERSION}"
+echo "GAE Version: ${GAE_VERSION}"
+echo "Bucket: gs://static-${CODE_PROJECT_NAME}-${GAE_VERSION}"
+echo "Docker image: ${DOCKER_IMAGE}"
 
 gcloud config set project $PROJECT_NAME
 
@@ -95,13 +107,15 @@ envsubst < requirements.txt.template > requirements.txt
 # Substitutions on the YAML file (for instance GAE_VERSION)
 envsubst < $YAML_FILE > processed-${YAML_FILE}
 
+cp $GOOGLE_APPLICATION_CREDENTIALS ./credentials.json
+
 # Build the docker image
-docker build -t eu.gcr.io/${PROJECT_NAME}/${CODE_PROJECT_NAME}:${CODE_PROJECT_VERSION} .
+docker build -t $DOCKER_IMAGE .
 
 # Upload image to Google
-gcloud docker -- push eu.gcr.io/${PROJECT_NAME}/${CODE_PROJECT_NAME}:${CODE_PROJECT_VERSION}
+gcloud docker -- push $DOCKER_IMAGE
 
 # gcloud app deploy using the previous image and the processed flex-app.yaml (other available params: --log-http --verbosity=debug)
 gcloud app deploy --project $PROJECT_NAME \
-    --image-url eu.gcr.io/${PROJECT_NAME}/${CODE_PROJECT_NAME}:${CODE_PROJECT_VERSION} \
+    --image-url $DOCKER_IMAGE \
     $CODE_PROJECT_VERSION $NO_PROMOTE processed-${YAML_FILE}
