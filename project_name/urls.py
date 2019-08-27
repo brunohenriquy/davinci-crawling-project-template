@@ -30,7 +30,7 @@ from caravaggio_rest_api.users.urls import urlpatterns as users_urls
 from caravaggio_rest_api.views import CustomAuthToken, get_swagger_view
 
 # from davinci_crawling.example.bovespa.urls import urlpatterns as bovespa_urls
-from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
+# from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
 
 urlpatterns = [
     # ## DO NOT TOUCH
@@ -66,13 +66,14 @@ urlpatterns = [
     # # API
     # url(r'^bovespa/', include(bovespa_urls)),
 
-    url(r'^api-schema/{{ project_name | lower }}/$',
-        get_schema_view(title="{{ project_name | capfirst }} API",
-                        patterns=[url(r'^{{ project_name | lower }}/',
-                                      include({{ project_name | lower }}_urls))])),
+    # {{ project_name | capfirst }} crawler documentation
+    # url(r'^api-schema/{{ project_name | lower }}/$',
+    #     get_schema_view(title="{{ project_name | capfirst }} API",
+    #                     patterns=[url(r'^{{ project_name | lower }}/',
+    #                                   include({{ project_name | lower }}_urls))])),
 
-    # {{ project_name | capfirst }} API version
-    url(r'^{{ project_name | lower }}/', include({{ project_name | lower }}_urls)),
+    # {{ project_name | capfirst }} crawler API
+    # url(r'^{{ project_name | lower }}/', include({{ project_name | lower }}_urls)),
 ]
 
 if settings.DEBUG:

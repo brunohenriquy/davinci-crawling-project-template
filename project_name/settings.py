@@ -129,8 +129,12 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR,
-                         'davinci_crawler_{{ project_name | lower }}/templates'),
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, '{{ project_name | lower }}/templates'),
+
+            # Your crawlers templates go here
+            # os.path.join(BASE_DIR,
+            #              '<YOUR-CRAWLER>/templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -159,7 +163,8 @@ WSGI_APPLICATION = '{{ project_name | lower }}.wsgi.application'
 if os.getenv('GAE_SERVICE', ''):
     LOGGING_FILE = "/var/log/{{ project_name | lower }}-debug.log"
 else:
-    LOGGING_FILE = "/data/{{ project_name | lower }}/log/{{ project_name | lower }}-debug.log"
+    LOGGING_FILE = "/data/{{ project_name | lower }}/" \
+                   "log/{{ project_name | lower }}-debug.log"
 
 LOGGING = {
     'version': 1,
@@ -235,21 +240,16 @@ LOGGING = {
         #     'level': 'ERROR',
         #     'propagate': True,
         # },
-        'davinci_crawler_bovespa': {
-            'handlers': ['console', 'debug_log', 'mail_admins'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
         # 'davinci_crawler_bovespa': {
-        #     'handlers': ['console', 'mail_admins'],
+        #     'handlers': ['console', 'debug_log', 'mail_admins'],
         #     'level': 'DEBUG',
         #     'propagate': True,
         # },
-        'davinci_crawler_{{ project_name | lower }}': {
-            'handlers': ['console', 'mail_admins'],
-            'level': 'DEBUG',
-            'propagate': True,
-        }
+        # 'davinci_crawler_{{ project_name | lower }}': {
+        #     'handlers': ['console', 'mail_admins'],
+        #     'level': 'DEBUG',
+        #     'propagate': True,
+        # }
     }
 }
 
@@ -446,7 +446,10 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    # os.path.join(BASE_DIR + '/{{ project_name | lower }}/static'),
+    os.path.join(BASE_DIR + '/{{ project_name | lower }}/static'),
+
+    # Your crawler static files go here
+    # os.path.join(BASE_DIR + '/<YOUR-CRAWLER>/static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -569,9 +572,9 @@ THROTTLED_VIEWS = [
     # "BovespaAccountViewSet", "BovespaAccountSearchViewSet",
 
     # Your ViewSets should be declared here
-    "{{ project_name | capfirst }}ResourceViewSet",
-    "{{ project_name | capfirst }}ResourceSearchViewSet",
-    "{{ project_name | capfirst }}ResourceGEOSearchViewSet"
+    # "{{ project_name | capfirst }}ResourceViewSet",
+    # "{{ project_name | capfirst }}ResourceSearchViewSet",
+    # "{{ project_name | capfirst }}ResourceGEOSearchViewSet"
 ]
 
 # Masters
@@ -698,95 +701,91 @@ PROJECT_DOCKER_IMAGE = os.getenv(
     "eu.gcr.io/dotted-ranger-212213/{{ project_name | lower }}:v0-0-1")
 
 
-DAVINCI_CRAWLERS_ENV_PARAMS = [
-    "DSE_SUPPORT",
+# DAVINCI_CRAWLERS_ENV_PARAMS = [
+#     "DSE_SUPPORT",
+#
+#     "CASSANDRA_DB_HOST",
+#     "CASSANDRA_DB_NAME",
+#     "CASSANDRA_DB_PASSWORD",
+#     "CASSANDRA_DB_REPLICATION",
+#     "CASSANDRA_DB_STRATEGY",
+#     "CASSANDRA_DB_USER",
+#
+#     "DB_HOST",
+#     "DB_NAME",
+#     "DB_PASSWORD",
+#     "DB_PORT",
+#     "DB_USER",
+#     "DB_USER",
+#
+#     "HAYSTACK_ACTIVE",
+#     "HAYSTACK_ADMIN_URL",
+#     "HAYSTACK_KEYSPACE",
+#     "HAYSTACK_URL",
+#
+#     "REDIS_HOST_PRIMARY",
+#     "REDIS_PASS_PRIMARY",
+#     "REDIS_PORT_PRIMARY",
+#
+#     "SECRET_KEY",
+#     "SECURE_SSL_HOST",
+#     "SECURE_SSL_REDIRECT",
+#
+#     "STATIC_URL",
+#     "THROTTLE_ENABLED",
+#
+#     "EMAIL_HOST_PASSWORD",
+#     "EMAIL_HOST_USER",
+#
+#     "GAE_SERVICE",
+#
+#     "GOOGLE_ANALYTICS_ID"
+# ]
 
-    "CASSANDRA_DB_HOST",
-    "CASSANDRA_DB_NAME",
-    "CASSANDRA_DB_PASSWORD",
-    "CASSANDRA_DB_REPLICATION",
-    "CASSANDRA_DB_STRATEGY",
-    "CASSANDRA_DB_USER",
 
-    "DB_HOST",
-    "DB_NAME",
-    "DB_PASSWORD",
-    "DB_PORT",
-    "DB_USER",
-    "DB_USER",
-
-    "HAYSTACK_ACTIVE",
-    "HAYSTACK_ADMIN_URL",
-    "HAYSTACK_KEYSPACE",
-    "HAYSTACK_URL",
-
-    "REDIS_HOST_PRIMARY",
-    "REDIS_PASS_PRIMARY",
-    "REDIS_PORT_PRIMARY",
-
-    "SECRET_KEY",
-    "SECURE_SSL_HOST",
-    "SECURE_SSL_REDIRECT",
-
-    "STATIC_URL",
-    "THROTTLE_ENABLED",
-
-    "EMAIL_HOST_PASSWORD",
-    "EMAIL_HOST_USER",
-
-    "GAE_SERVICE",
-
-    "GOOGLE_ANALYTICS_ID"
-]
-
-
-DAVINCI_CRAWLERS = {
-    # "bovespa": {
-    #    "deployment": {
-    #        # Google Cloud Platform
-    #        "cloud": "gcp",
-    #        "project": "dotted-ranger-212213", # Sandbox
-    #        "zone": "europe-west2-a",
-    #
-    #        # A list of available machine types can be found here:
-    #        # https://cloud.google.com/compute/docs/machine-types
-    #        "machine-type": "n1-standard-2",
-    #
-    #        # Container - Optimized OS
-    #        # https://cloud.google.com/compute/docs/images?
-    #        #   hl=es-419#os-compute-support
-    #        "image": {
-    #            "project": "cos-cloud",
-    #            "family": "cos-stable"
-    #        },
-    #    },
-    #    "arguments": {
-    #        "--cache-dir": "gs://davinci_cache"
-    #    },
-    #    "cron": "*/5 * * * *"
-    # },
-    "{{ project_name | lower }}": {
-        "deployment": {
-            # Google Cloud Platform
-            "cloud": "gcp",
-            "project": "dotted-ranger-212213", # Sandbox
-            "zone": "europe-west2-a",
-
-            # A list of available machine types can be found here:
-            # https://cloud.google.com/compute/docs/machine-types
-            "machine-type": "n1-standard-1",
-
-            # Container - Optimized OS
-            # https://cloud.google.com/compute/docs/images?
-            #   hl=es-419#os-compute-support
-            "image": {
-                "project": "cos-cloud",
-                "family": "cos-stable"
-            },
-        },
-        "arguments": {
-            "--cache-dir": "gs://davinci_cache"
-        },
-        "cron": "* * 0 * *"
-    }
-}
+# DAVINCI_CRAWLERS = {
+#    "bovespa": {
+#       "deployment": {
+#           # Google Cloud Platform
+#           "cloud": "gcp",
+#           "project": "dotted-ranger-212213", # Sandbox
+#           "zone": "europe-west2-a",
+#               # A list of available machine types can be found here:
+#           # https://cloud.google.com/compute/docs/machine-types
+#           "machine-type": "n1-standard-2",
+#               # Container - Optimized OS
+#           # https://cloud.google.com/compute/docs/images?
+#           #   hl=es-419#os-compute-support
+#           "image": {
+#               "project": "cos-cloud",
+#               "family": "cos-stable"
+#           },
+#       },
+#       "arguments": {
+#           "--cache-dir": "gs://davinci_cache"
+#       },
+#       "cron": "*/5 * * * *"
+#    },
+#    "{{ project_name | lower }}": {
+#       "deployment": {
+#           # Google Cloud Platform
+#           "cloud": "gcp",
+#           "project": "dotted-ranger-212213", # Sandbox
+#           "zone": "europe-west2-a",
+#               # A list of available machine types can be found here:
+#           # https://cloud.google.com/compute/docs/machine-types
+#           "machine-type": "n1-standard-1",
+#               # Container - Optimized OS
+#           # https://cloud.google.com/compute/docs/images?
+#           #   hl=es-419#os-compute-support
+#           "image": {
+#               "project": "cos-cloud",
+#               "family": "cos-stable"
+#           },
+#       },
+#       "arguments": {
+#           "--cache-dir": "gs://davinci_cache"
+#       },
+#       "cron": "* * 0 * *"
+#    }
+# }

@@ -63,8 +63,8 @@ The crawler is implemented for Python 3.7. Then we will need a 3.7 environment r
 We can use [Anaconda](https://conda.io/docs/installation.html) to manage the environment. Once Anaconda is present in our system, we can do the following steps:
 
 ```
-$ conda create -n bovespa_crawler python=3.7
-$ conda activate bovespa_crawler
+$ conda create -n {{ project_name | lower }} python=3.7
+$ conda activate {{ project_name | lower }}
 $ python setup install
 ``` 
 
@@ -89,7 +89,7 @@ Arguments:
 
 - `--from-date`: Extract only the data after an specific date. Default: `None`. Ex: "2018-01-01".
 
-- `--cache-folder`: The folder we want to use to save the downloaded files. Default: `./crawler_cache`. Ex: /data/crawlers/bovespa.
+- `--cache-folder`: The folder we want to use to save the downloaded files. Default: `./crawler_cache`. Ex: /data/crawlers/{{ project_name | lower }}.
 
 - `--workers-num`: The number of parallel threads crawling. Default: `10`. Ex: 20.
 

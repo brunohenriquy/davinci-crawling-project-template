@@ -8,7 +8,7 @@ r"""
 
 """
 
-__title__ = 'Django DaVinci Crawler {{ project_name }}'
+__title__ = 'Django DaVinci Crawling Project: {{ project_name }}'
 __version__ = '0.1.0'
 __author__ = 'Javier Alperte'
 __license__ = 'MIT'
