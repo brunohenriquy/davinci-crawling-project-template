@@ -42,13 +42,13 @@ if sys.argv[-1] == 'publish':
 setup(
     name='davinci-crawler-{{ project_name | lower }}',
     version=version,
-    url='http://www.preseries.com',
+    url='http://buildgroupai.com',
     license='MIT',
     description='Django DaVinci Crawler {{ project_name }}.',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
     author='Javier Alperte',
-    author_email='alperte@preseries.com',  # SEE NOTE BELOW (*)
+    author_email='xalperte@buildgroupai.com',  # SEE NOTE BELOW (*)
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=[
@@ -84,7 +84,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ],
     dependency_links=[
-        "https://github.com/preseries/django-davinci-crawling/tarball/"
+        "https://github.com/buildgroupai/django-davinci-crawling/tarball/"
         "0.1.3#egg=django-davinci-crawling-0.1.3"
     ],
 )

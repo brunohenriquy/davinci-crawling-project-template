@@ -8,8 +8,8 @@ This template has also support for Docker and is also optimized for Google App E
 
 ## Features
 
-- [Caravaggio REST API Framework](https://github.com/preseries/django-caravaggio-rest-api) (Django 2.0+, DRF, DataStax/Cassandra)
-- [DaVinci Crawling Framwework](https://github.com/preseries/django-davinci-crawling) 
+- [Caravaggio REST API Framework](https://github.com/buildgroupai/django-caravaggio-rest-api) (Django 2.0+, DRF, DataStax/Cassandra)
+- [DaVinci Crawling Framwework](https://github.com/buildgroupai/django-davinci-crawling) 
 - PostgreSQL database support with psycopg2.
 - DataStax database support with DSE Driver
 - Get value insight and debug information while on Development with django-debug-toolbar.
@@ -29,7 +29,7 @@ We need to install, configure and start the following services:
 - PostgreSQL 9.6
 - Redis 3
 
-To do that we can follow the instructions [here](https://github.com/preseries/django-caravaggio-rest-api/blob/master/docs/local_environment.md). 
+To do that we can follow the instructions [here](https://github.com/buildgroupai/django-caravaggio-rest-api/blob/master/docs/local_environment.md). 
 
 Once the previous services are ready, we can proceed with the installation.
 
@@ -44,7 +44,7 @@ $ conda activate myproject
 $ pip install django>=2
 
 $ django-admin.py startproject \
-  --template=https://github.com/preseries/davinci-crawling-project-template/archive/master.zip \
+  --template=https://github.com/buildgroupai/davinci-crawling-project-template/archive/master.zip \
   --name=Dockerfile \
   --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
   myproject
@@ -52,7 +52,7 @@ $ django-admin.py startproject \
 $ cd myproject
 
 $ python manage.py startapp \
-   --template=https://github.com/preseries/davinci-crawling-app-template/archive/master.zip \
+   --template=https://github.com/buildgroupai/davinci-crawling-app-template/archive/master.zip \
    --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
    mycrawler
    
@@ -131,7 +131,7 @@ urlpatterns = [
 
 ### Setup the databases
 
-Follow the instructions [here](https://github.com/preseries/django-caravaggio-rest-api/blob/master/docs/local_environment.md) to prepare your backend for development.
+Follow the instructions [here](https://github.com/buildgroupai/django-caravaggio-rest-api/blob/master/docs/local_environment.md) to prepare your backend for development.
 
 In this step we are going to populate the databases and its tables. The default database is a PostgreSQL (you can change it) and then we also have the cassandra database, that can be a Cassandra or DSE server.
 
@@ -230,7 +230,7 @@ Type 'yes' to continue, or 'no' to cancel: yes
 Let's create the admin user with its own auth token
 
 ```
-$ python manage.py createsuperuser --username _myproject --email myproject@preseries.com --noinput
+$ python manage.py createsuperuser --username _myproject --email myproject@buildgroupai.com --noinput
 $ python manage.py changepassword _myproject
 Changing password for user '_myproject'
 Password: 
@@ -243,7 +243,7 @@ $ curl -H "Content-Type: application/json" -X POST \
     -d '{"username": "_myproject", "password": "MY_PASSWORD"}' \
     http://127.0.0.1:8001/api-token-auth/
     
-{"token":"b10061d0b62867d0d9e3eb4a8c8cb6a068b2f14a","user_id":1,"email":"myproject@preseries.com"}    
+{"token":"b10061d0b62867d0d9e3eb4a8c8cb6a068b2f14a","user_id":1,"email":"myproject@buildgroupai.com"}    
 ```
 
 ## Deploy the crawling project into Google App Engine
@@ -325,7 +325,7 @@ Once these services are ready, we can start the deploy process.
       REDIS_PORT_PRIMARY: 6379
       REDIS_PASS_PRIMARY: GeeCg1SqY7Lb
     
-      EMAIL_HOST_USER: info@preseries.com
+      EMAIL_HOST_USER: info@buildgroupai.com
       EMAIL_HOST_PASSWORD: 6ZREm4he
     
     # Google App Engine limits application deployments to 10,000 uploaded files per
@@ -378,7 +378,7 @@ python manage.py crawl myproject \
 If we want to launch the crawler/s as docker containers we will need to generate its docker image.
 
 ```
-$ docker build -t preseries.com/davinci_crawler/myproject:0.1 .
+$ docker build -t buildgroupai.com/davinci_crawler/myproject:0.1 .
 ```
 
 ## Run the web application using Docker
@@ -502,7 +502,7 @@ $ cloud_sql_proxy -instances=centering-badge-212119:europe-west1:sky-pre-s=tcp:1
 Now we are ready to start the service:
 
 ```
-docker run -d --link=redis_preseries_db:redis \
+docker run -d --link=redis_bgds_db:redis \
     -p 8080:8080 \ 
     -e REDIS_HOST_PRIMARY='redis' \
     -e SKY_DB_HOST='10.200.10.1' \

@@ -65,4 +65,4 @@ docker run -d --link=${PROJECT_NAME}-redis:redis --link=${PROJECT_NAME}-db:postg
     -e EMAIL_HOST_USER=$EMAIL_HOST_USER \
     -e EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD \
     --name $PROJECT_NAME \
-    gcr.io/preseries.com/$PROJECT_NAME:$PROJECT_VERSION
+    gcr.io/buildgroupai.com/$PROJECT_NAME:$PROJECT_VERSION

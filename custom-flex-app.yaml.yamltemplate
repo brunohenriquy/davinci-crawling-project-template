@@ -39,7 +39,7 @@ env_variables:
   SECURE_SSL_REDIRECT: True
 
   SITE_SCHEMA: https
-  SITE_DOMAIN: preseries.com
+  SITE_DOMAIN: buildgroupai.com
 
   GOOGLE_ANALYTICS_ID: [ID]
 
