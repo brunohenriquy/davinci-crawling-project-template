@@ -1,20 +1,24 @@
 #!/bin/sh
 #
-# Usage: deploy-app.sh -p project-name -v version
-#        deploy-app.sh -p xxxxx -v v2018-09
+# Usage: deploy-app.sh -p project-name -v version -i image
+#        deploy-app.sh -p xxxxx -v v2018-09 -i gcr.io/buildgroupai.com/{{ project_name | lower }}:v2019-09
 #
 
 DIRECTORY="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Sandbox
+DOCKER_REPO="gcr.io"
 PROJECT_NAME={{ project_name | lower }}
 PROJECT_VERSION=
+IMAGE_NAME="gcr.io/buildgroupai.com/{{ project_name | lower }}"
 
 while :; do
     case $1 in
         -p|--project) PROJECT_NAME=$2
         ;;
         -v|--version) PROJECT_VERSION="$2"
+        ;;
+        -i|--image) IMAGE_NAME="$2"
         ;;
         *) break
     esac
@@ -65,4 +69,4 @@ docker run -d --link=${PROJECT_NAME}-redis:redis --link=${PROJECT_NAME}-db:postg
     -e EMAIL_HOST_USER=$EMAIL_HOST_USER \
     -e EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD \
     --name $PROJECT_NAME \
-    gcr.io/buildgroupai.com/$PROJECT_NAME:$PROJECT_VERSION
+    $IMAGE_NAME

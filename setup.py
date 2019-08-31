@@ -35,12 +35,12 @@ if sys.argv[-1] == 'publish':
     print("  git push --tags")
     shutil.rmtree('dist')
     shutil.rmtree('build')
-    shutil.rmtree('davinci-crawler-{{ project_name | lower }}.egg-info')
+    shutil.rmtree('davinci-crawling-{{ project_name | lower }}.egg-info')
     sys.exit()
 
 
 setup(
-    name='davinci-crawler-{{ project_name | lower }}',
+    name='davinci-crawling-{{ project_name | lower }}',
     version=version,
     url='http://buildgroupai.com',
     license='MIT',

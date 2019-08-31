@@ -2,14 +2,16 @@
 #
 # It builds and uploads the project image into the Google Container Registry.
 #
-# Usage: upload-docker-image.sh -p project-name -v version
-#        deploy-app.sh -p dotted-ranger-333333 -v v2018-05
+# Usage: upload-docker-image.sh -p project-name -v version -o optimized? -r docker-repo
+#        upload-docker-image.sh -p dotted-ranger-212213 -v v2018-05 -o yes -r eu.gcr.io
 #
 
 DIRECTORY=`dirname $0`
 
+DOCKER_REPO="gcr.io"
 PROJECT_NAME=
 CODE_PROJECT_NAME={{ project_name | lower }}
+OPTIMIZED="optimized=no"
 VERSION=
 
 while :; do
@@ -18,6 +20,10 @@ while :; do
         ;;
         -v|--version) VERSION=$2
         ;;
+        -o|--optimized) OPTIMIZED="optimized=$2"
+        ;;
+        -r|--docker-repo) DOCKER_REPO=$2
+        ;;
         *) break
     esac
     shift 2
@@ -25,7 +31,7 @@ done
 
 if [ -z "$PROJECT_NAME" ]
 then
-      echo "The project-name must be specified. Ex. -p dotted-ranger-333333"
+      echo "The project-name must be specified. Ex. -p dotted-ranger-212213"
       exit 2
 fi
 
@@ -39,7 +45,11 @@ gcloud config set project $PROJECT_NAME
 
 # Generate the docker image
 
-docker build -t gcr.io/$PROJECT_NAME/$CODE_PROJECT_NAME:$VERSION ../
+docker build --build-arg $OPTIMIZED \
+    --build-arg gae_project_name=$PROJECT_NAME \
+    --build-arg project_name=$CODE_PROJECT_NAME \
+    --build-arg version=$VERSION \
+    -t $DOCKER_REPO/$PROJECT_NAME/$CODE_PROJECT_NAME:$VERSION ../
 
 docker images | grep $CODE_PROJECT_NAME
 
@@ -47,4 +57,4 @@ docker images | grep $CODE_PROJECT_NAME
 
 gcloud auth configure-docker
 
-docker push gcr.io/$PROJECT_NAME/$CODE_PROJECT_NAME:$VERSION
+docker push $DOCKER_REPO/$PROJECT_NAME/$CODE_PROJECT_NAME:$VERSION

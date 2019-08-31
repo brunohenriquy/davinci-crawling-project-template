@@ -13,5 +13,5 @@ django-extensions==2.1.3
 django_compressor>=2.2
 
 https://github.com/buildgroupai/django-cassandra-engine/tarball/1.5.4-bgds-1#egg=django-cassandra-engine-1.5.4.bgds-1
-https://github.com/buildgroupai/django-caravaggio-rest-api/tarball/0.1.3#egg=django-caravaggio-rest-api-0.1.3
+https://github.com/buildgroupai/django-caravaggio-rest-api/tarball/0.1.5#egg=django-caravaggio-rest-api-0.1.5
 https://github.com/buildgroupai/django-davinci-crawling/tarball/0.1.3#egg=django-davinci-crawling-0.1.3
