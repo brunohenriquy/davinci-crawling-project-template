@@ -61,7 +61,7 @@ setup(
         'django-debug-toolbar==1.10.1',
         'django-extensions==2.1.3',
         'django_compressor>=2.2',
-        'django-davinci-crawling==0.1.3'],
+        'django-davinci-crawling==0.1.4'],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     zip_safe=False,
     classifiers=[
@@ -85,7 +85,7 @@ setup(
     ],
     dependency_links=[
         "https://github.com/buildgroupai/django-davinci-crawling/tarball/"
-        "0.1.3#egg=django-davinci-crawling-0.1.3"
+        "0.1.4#egg=django-davinci-crawling-0.1.4"
     ],
 )
 
