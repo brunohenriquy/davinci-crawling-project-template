@@ -351,7 +351,7 @@ Before start the crawler we need to have ready the responses for the following q
 
 - The name of our crawler. Ex. `my_crawler`
 
-- Where is located the binary of the PhantomJS library in our local system? Ex. `/servers/phantomjs-2.1.1-macosx/bin/phantomjs`
+- Where is located the binary of the Chromium library in our local system? Ex. `/Applications/Chromium.app/Contents/MacOS/Chromium`
 
 - Where is the place in our local filesystem that is goin to be used as local - volatile - cache? Ex. `fs:///data/harvest/local`
 
@@ -367,7 +367,7 @@ After responde these questions we are ready to run the crawler:
 ```
 python manage.py crawl myproject \
     --workers-num 10 \
-    --phantomjs-path /servers/phantomjs-2.1.1-macosx/bin/phantomjs \
+    --chromium-bin-file '/Applications/Chromium.app/Contents/MacOS/Chromium' \
     --io-gs-project centering-badge-212119 \
     --cache-dir "gs://my_crawler_cache" \
     --local-dir "fs:///data/my_crawler/local"
