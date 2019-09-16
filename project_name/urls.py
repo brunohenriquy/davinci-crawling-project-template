@@ -17,23 +17,44 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf import settings
+from django.conf import urls, settings
 from django.conf.urls import url, include
 from django.urls import path
 
-from rest_framework_cache.registry import cache_registry
-from rest_framework.schemas import get_schema_view
-
 from django.contrib import admin
 
-from caravaggio_rest_api.users.urls import urlpatterns as users_urls
-from caravaggio_rest_api.views import CustomAuthToken, get_swagger_view
+from rest_framework_cache.registry import cache_registry
+
+from caravaggio_rest_api.users.api.urls import urlpatterns as users_urls
+from caravaggio_rest_api.users.api.views import \
+    CustomAuthToken, AdminAuthToken
+
+from caravaggio_rest_api.views import schema_view
+
+
+try:
+    from davinci_crawling.example.bovespa.urls import \
+        urlpatterns as bovespa_crawler_urls
+except TypeError:
+    pass
+
+urls.handler500 = 'rest_framework.exceptions.server_error'
+urls.handler400 = 'rest_framework.exceptions.bad_request'
 
 # from davinci_crawling.example.bovespa.urls import urlpatterns as bovespa_urls
-# from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
+from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
 
 urlpatterns = [
     # ## DO NOT TOUCH
+
+    # API Swagger documentation
+    url(r'^swagger(?P<format>\.json|\.yaml)$',
+        schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    url(r'^swagger/$',
+        schema_view.with_ui('swagger', cache_timeout=0),
+        name='schema-swagger-ui'),
+    url(r'^redoc/$',
+        schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # Django REST Framework auth urls
     url(r'^api-auth/',
@@ -42,38 +63,23 @@ urlpatterns = [
     # Mechanism for clients to obtain a token given the username and password.
     url(r'^api-token-auth/', CustomAuthToken.as_view()),
 
+    # Mechanism for administrator to obtain a token given
+    # the client id and email.
+    url(r'^admin-token-auth/', AdminAuthToken.as_view()),
+
     # Access to the admin site
     url(r'^admin/', admin.site.urls),
-
-    # Django Rest Framework Swagger documentation
-    url(r'^schema/$',
-        get_swagger_view(title='API Documentation')),
-
-    url(r'^api-schema/users/$',
-        get_schema_view(title="Uses API",
-                        patterns=[url(r'^users/',
-                                      include(users_urls))])),
 
     # Users API version
     url(r'^users/', include(users_urls)),
 
-    # Bovespa crawler
-    # url(r'^api-schema/bovespa/$',
-    #     get_schema_view(title="Bovespa Crawler Data API",
-    #                     patterns=[url(r'^bovepa/',
-    #                                   include(bovespa_urls))])),
-    #
-    # # API
+    # ## END DO NOT TOUCH
+
+    # Bovespa crawler API
     # url(r'^bovespa/', include(bovespa_urls)),
 
-    # {{ project_name | capfirst }} crawler documentation
-    # url(r'^api-schema/{{ project_name | lower }}/$',
-    #     get_schema_view(title="{{ project_name | capfirst }} API",
-    #                     patterns=[url(r'^{{ project_name | lower }}/',
-    #                                   include({{ project_name | lower }}_urls))])),
-
-    # {{ project_name | capfirst }} crawler API
-    # url(r'^{{ project_name | lower }}/', include({{ project_name | lower }}_urls)),
+    # {{ project_name | capfirst }} crawling API
+    url(r'^{{ project_name | lower }}/', include({{ project_name | lower }}_urls)),
 ]
 
 if settings.DEBUG:
