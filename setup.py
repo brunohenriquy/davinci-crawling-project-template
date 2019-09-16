@@ -58,10 +58,12 @@ setup(
         'gunicorn>=19.9.0',
         'dse-driver>=2.6',
         # 'cassandra-driver>=3.15.0',
-        'django-debug-toolbar==1.10.1',
-        'django-extensions==2.1.3',
         'django_compressor>=2.2',
-        'django-davinci-crawling==0.1.4'],
+        'django-davinci-crawling==0.1.5-SNAPSHOT'],
+    tests_require=[
+        'django-debug-toolbar>=1.10.1',
+        'django-extensions>=2.1.3',
+    ],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     zip_safe=False,
     classifiers=[
@@ -84,8 +86,9 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ],
     dependency_links=[
-        "https://github.com/buildgroupai/django-davinci-crawling/tarball/"
-        "0.1.4#egg=django-davinci-crawling-0.1.4"
+        "git+ssh://git@github.com/buildgroupai/django-davinci-crawling.git"
+        "@clients-support_external-systems#"
+        "egg=django-davinci-crawling-0.1.5-SNAPSHOT",
     ],
 )
 
