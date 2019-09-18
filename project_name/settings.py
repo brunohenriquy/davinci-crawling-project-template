@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
 
     'rest_framework',
+    'rest_framework_filters',
     'rest_framework.authtoken',
     'rest_framework_cache',
     'drf_yasg',
