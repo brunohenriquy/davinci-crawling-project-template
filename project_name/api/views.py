@@ -8,7 +8,7 @@ from caravaggio_rest_api.drf_haystack.viewsets import \
 #    TokenAuthentication, SessionAuthentication
 # from rest_framework.permissions import IsAuthenticated
 
-from .serializers import MyResourceSerializerV1
+from .serializers import {{ project_name | capfirst }}ResourceSerializerV1
 
 from {{ project_name | lower }}.models import {{ project_name | capfirst }}Resource
 
