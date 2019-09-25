@@ -19,7 +19,8 @@ except ImportError:
 
 CARAVAGGIO_API_TITLE = "{{ project_name | capfirst }} API"
 CARAVAGGIO_API_VERSION = "v1"
-CARAVAGGIO_API_DESCRIPTION = "API for {{ project_name | capfirst }} Crawling application"
+CARAVAGGIO_API_DESCRIPTION = \
+    "API for {{ project_name | capfirst }} Crawling application"
 CARAVAGGIO_API_TERMS_URL = "https://www.google.com/policies/terms/"
 CARAVAGGIO_API_CONTACT = "contact@buildgroupai.com"
 CARAVAGGIO_API_LICENSE = "BSD License"
@@ -101,19 +102,17 @@ INSTALLED_APPS = [
     'compressor',
 
     'haystack',
-    # 'django_apscheduler',
 
     'caravaggio_rest_api',
     'caravaggio_rest_api.users',
     'davinci_crawling',
-    # 'davinci_crawling.scheduler',
 
-    # 'davinci_crawling.example.bovespa',
     '{{ project_name | lower }}'
 ]
 
 INSTALLED_APPS += [
-    # Add here your davinci crawlers (apps),
+    # Add here the davinci crawlers (apps),
+    # 'davinci_crawling.example.bovespa',
 ]
 
 if DEBUG:
@@ -222,11 +221,6 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'django_apscheduler': {
-            'handlers': ['console', 'debug_log', 'mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
         'django_cassandra_engine': {
             'handlers': ['console', 'debug_log', 'mail_admins'],
             'level': 'DEBUG',
@@ -242,16 +236,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        # 'davinci_crawling.scheduler': {
-        #     'handlers': ['console', 'debug_log', 'mail_admins'],
-        #     'level': 'DEBUG',
-        #     'propagate': False,
-        # },
-        # 'davinci_crawling.gcp': {
-        #     'handlers': ['console', 'debug_log', 'mail_admins'],
-        #     'level': 'ERROR',
-        #     'propagate': True,
-        # },
         # 'davinci_crawler_bovespa': {
         #     'handlers': ['console', 'debug_log', 'mail_admins'],
         #     'level': 'DEBUG',
@@ -702,98 +686,6 @@ SWAGGER_SETTINGS = {
     ],
 }
 
-# APSCHEDULER_DATETIME_FORMAT =  "N j, Y, f:s a"  # Default
-
 PROJECT_DOCKER_IMAGE = os.getenv(
     "PROJECT_DOCKER_IMAGE",
     "eu.gcr.io/dotted-ranger-212213/{{ project_name | lower }}:v0-0-1")
-
-
-# DAVINCI_CRAWLERS_ENV_PARAMS = [
-#     "DSE_SUPPORT",
-#
-#     "CASSANDRA_DB_HOST",
-#     "CASSANDRA_DB_NAME",
-#     "CASSANDRA_DB_PASSWORD",
-#     "CASSANDRA_DB_REPLICATION",
-#     "CASSANDRA_DB_STRATEGY",
-#     "CASSANDRA_DB_USER",
-#
-#     "DB_HOST",
-#     "DB_NAME",
-#     "DB_PASSWORD",
-#     "DB_PORT",
-#     "DB_USER",
-#     "DB_USER",
-#
-#     "HAYSTACK_ACTIVE",
-#     "HAYSTACK_ADMIN_URL",
-#     "HAYSTACK_KEYSPACE",
-#     "HAYSTACK_URL",
-#
-#     "REDIS_HOST_PRIMARY",
-#     "REDIS_PASS_PRIMARY",
-#     "REDIS_PORT_PRIMARY",
-#
-#     "SECRET_KEY",
-#     "SECURE_SSL_HOST",
-#     "SECURE_SSL_REDIRECT",
-#
-#     "STATIC_URL",
-#     "THROTTLE_ENABLED",
-#
-#     "EMAIL_HOST_PASSWORD",
-#     "EMAIL_HOST_USER",
-#
-#     "GAE_SERVICE",
-#
-#     "GOOGLE_ANALYTICS_ID"
-# ]
-
-
-# DAVINCI_CRAWLERS = {
-#    "bovespa": {
-#       "deployment": {
-#           # Google Cloud Platform
-#           "cloud": "gcp",
-#           "project": "dotted-ranger-212213", # Sandbox
-#           "zone": "europe-west2-a",
-#               # A list of available machine types can be found here:
-#           # https://cloud.google.com/compute/docs/machine-types
-#           "machine-type": "n1-standard-2",
-#               # Container - Optimized OS
-#           # https://cloud.google.com/compute/docs/images?
-#           #   hl=es-419#os-compute-support
-#           "image": {
-#               "project": "cos-cloud",
-#               "family": "cos-stable"
-#           },
-#       },
-#       "arguments": {
-#           "--cache-dir": "gs://davinci_cache"
-#       },
-#       "cron": "*/5 * * * *"
-#    },
-#    "{{ project_name | lower }}": {
-#       "deployment": {
-#           # Google Cloud Platform
-#           "cloud": "gcp",
-#           "project": "dotted-ranger-212213", # Sandbox
-#           "zone": "europe-west2-a",
-#               # A list of available machine types can be found here:
-#           # https://cloud.google.com/compute/docs/machine-types
-#           "machine-type": "n1-standard-1",
-#               # Container - Optimized OS
-#           # https://cloud.google.com/compute/docs/images?
-#           #   hl=es-419#os-compute-support
-#           "image": {
-#               "project": "cos-cloud",
-#               "family": "cos-stable"
-#           },
-#       },
-#       "arguments": {
-#           "--cache-dir": "gs://davinci_cache"
-#       },
-#       "cron": "* * 0 * *"
-#    }
-# }
