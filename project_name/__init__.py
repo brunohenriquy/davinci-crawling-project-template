@@ -24,6 +24,6 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 ISO_8601 = 'iso-8601'
 
 # Crawler name
-CRAWLER_NAME = '{{ project_name }}'
+CRAWLING_PROJECT_NAME = '{{ project_name }}'
 
 default_app_config = '{{project_name}}.apps.DaVinciCrawlerConfig'
