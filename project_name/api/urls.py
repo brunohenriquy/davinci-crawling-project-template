@@ -17,7 +17,7 @@ Including another URLconf
 from django.conf.urls import url, include
 
 from {{ project_name | lower }}.api.views import \
-    MyResourceViewSet
+    {{ project_name | capfirst }}ResourceViewSet
 
 from rest_framework import routers
 
@@ -25,9 +25,9 @@ from rest_framework import routers
 
 api_CRAWLER_PROJECT = routers.DefaultRouter()
 
-api_CRAWLER_PROJECT.register(r'myresource',
-                             MyResourceViewSet,
-                             base_name="myresource")
+api_CRAWLER_PROJECT.register(r'{{ project_name | lower }}resource',
+                             {{ project_name | capfirst }}ResourceViewSet,
+                             base_name="{{ project_name | lower }}resource")
 
 urlpatterns = [
     # API version

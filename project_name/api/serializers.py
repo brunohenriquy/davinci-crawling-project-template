@@ -10,10 +10,10 @@ from rest_framework_cache.registry import cache_registry
 from caravaggio_rest_api.drf_haystack import serializers as dse_serializers
 
 from {{ project_name | lower }}.models import \
-    MyResource
+    {{ project_name | capfirst }}Resource
 
 
-class MyResourceSerializerV1(
+class {{ project_name | capfirst }}ResourceSerializerV1(
         dse_serializers.CassandraModelSerializer, BaseCachedSerializerMixin):
     """
     Represents a Business Object API View with support for JSON, list, and map
@@ -21,7 +21,7 @@ class MyResourceSerializerV1(
     """
 
     class Meta:
-        model = MyResource
+        model = {{ project_name | capfirst }}Resource
         fields = ("id",
                   "created_at", "updated_at",
                   "name", "short_description", "long_description")
@@ -29,4 +29,4 @@ class MyResourceSerializerV1(
 
 
 # Cache configuration
-cache_registry.register(MyResourceSerializerV1)
+cache_registry.register({{ project_name | capfirst }}ResourceSerializerV1)
