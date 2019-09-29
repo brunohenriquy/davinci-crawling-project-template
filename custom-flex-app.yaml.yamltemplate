@@ -29,6 +29,8 @@ beta_settings:
 env_variables:
   SECRET_KEY: [SECRET_KEY]
 
+  ENVIRONMENT="production"
+
   STATIC_URL: https://storage.googleapis.com/static-{{ project_name | lower }}-${GAE_VERSION}/static/
 
   DEBUG: False
