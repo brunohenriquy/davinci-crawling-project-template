@@ -42,7 +42,7 @@ cmdclass = {
     'docs': BuildDoc
 }
 
-version = get_version('{{ project_name | lower }}')
+version = get_version('src/{{ project_name | lower }}')
 
 if sys.argv[-1] == 'publish':
     if os.system("pip freeze | grep twine"):
