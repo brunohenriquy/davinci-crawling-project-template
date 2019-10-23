@@ -5,8 +5,10 @@ import logging
 from django.utils import timezone
 import uuid
 
+from caravaggio_rest_api.dse.columns import \
+    KeyEncodedMap
 from caravaggio_rest_api.dse.models import \
-    CustomDjangoCassandraModel, KeyEncodedMap
+    CustomDjangoCassandraModel
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 

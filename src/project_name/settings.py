@@ -150,8 +150,9 @@ class Common(Configuration):
     if os.getenv('GAE_SERVICE', ''):
         LOGGING_FILE = "/var/log/{{ project_name | lower }}-debug.log"
     else:
-        LOGGING_FILE = "/data/{{ project_name | lower }}/" \
-                       "log/{{ project_name | lower }}-debug.log"
+        LOGGING_FILE = os.getenv("LOGGING_FILE",
+                                 "/data/{{ project_name | lower }}/"
+                                 "log/{{ project_name | lower }}.log")
 
     LOGGING = {
         'version': 1,
@@ -375,7 +376,7 @@ class Common(Configuration):
         # Put strings here, like "/home/html/static" or "C:/www/django/static".
         # Always use forward slashes, even on Windows.
         # Don't forget to use absolute paths, not relative paths.
-        os.path.join(BASE_DIR + '/{{ project_name | lower }}/static'),
+        # os.path.join(BASE_DIR + '/{{ project_name | lower }}/static'),
 
         # Your crawler static files go here
         # os.path.join(BASE_DIR + '/<YOUR-CRAWLER>/static'),
