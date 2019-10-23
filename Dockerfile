@@ -31,6 +31,8 @@ ARG phantomjs="2.1.1-linux-x86_64"
 
 ENV SECRET_KEY "secret-key"
 
+ENV ENVIRONMENT="development"
+
 ENV STATIC_URL "/static/"
 
 ENV DEBUG "False"

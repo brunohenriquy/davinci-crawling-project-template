@@ -1,0 +1,5 @@
+# The template base dependencies.
+# You can change the versions or the cassandra driver (datastax or cassandra)
+
+django-debug-toolbar==1.10.1
+django-extensions==2.1.3

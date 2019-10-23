@@ -10,9 +10,11 @@ It exposes the WSGI callable as a module-level variable named ``application``.
 
 import os
 
-from django.core.wsgi import get_wsgi_application
+from configurations.wsgi import get_wsgi_application
 
+configuration = os.getenv('ENVIRONMENT', 'development').title()
 os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE", "{{ project_name | lower }}.settings")
+os.environ.setdefault('DJANGO_CONFIGURATION', configuration)
 
 application = get_wsgi_application()

@@ -52,7 +52,8 @@ tmp_upload_dir = '/tmp'
 # Logging
 ###############################################################################
 accesslog = '/var/log/{{ project_name | lower }}_access.log'
-access_logformat = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+access_logformat = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" ' \
+                   '"%(a)s"'
 errorlog = '/var/log/{{ project_name | lower }}_s_error.log'
 loglevel = 'info'
 logger_class = 'simple'

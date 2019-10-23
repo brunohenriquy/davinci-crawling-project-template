@@ -1,4 +1,6 @@
-export SECRET_KEY=""
+export SECRET_KEY="2w=es4^%3i4n2cya(0)ws&bq+@h)m1nepzkvd&pi+wvgsue%ms"
+
+export ENVIRONMENT="development"
 
 export STATIC_URL="/static/"
 
