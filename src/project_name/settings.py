@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2018-2019 BuildGroup Data Services Inc.
+# Copyright (c) 2019 BuildGroup Data Services Inc.
 
 """
 Django settings for {{ project_name }} project.
@@ -42,7 +42,7 @@ class Common(Configuration):
     DEBUG = os.getenv("DEBUG", "False") == "True"
 
     ADMINS = (
-            # ('Your Name', 'your_email@example.com'),
+        # ('Your Name', 'your_email@example.com'),
     )
 
     MANAGERS = ADMINS
@@ -71,9 +71,9 @@ class Common(Configuration):
         'django.contrib.sites',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        # Uncomment the next line to enable the admin:
+        # Comment the next line to disable the admin:
         'django.contrib.admin',
-        # Uncomment the next line to enable admin documentation:
+        # Comment the next line to disable admin documentation:
         'django.contrib.admindocs',
 
         'rest_framework',
@@ -87,6 +87,7 @@ class Common(Configuration):
         'haystack',
 
         'caravaggio_rest_api',
+        'caravaggio_rest_api.logging',
         'caravaggio_rest_api.users',
         'davinci_crawling',
 
@@ -252,6 +253,9 @@ class Common(Configuration):
         os.getenv("CASSANDRA_DB_USER", "{{ project_name | lower }}")
     CASSANDRA_DB_PASSWORD = \
         os.getenv("CASSANDRA_DB_PASSWORD", "{{ project_name | lower }}")
+    CASSANDRA_DB_STRATEGY = os.getenv("CASSANDRA_DB_STRATEGY",
+                                      "SimpleStrategy")
+    CASSANDRA_DB_REPLICATION = os.getenv("CASSANDRA_DB_REPLICATION", 1)
 
     try:
         from dse.cqlengine import models
@@ -276,14 +280,16 @@ class Common(Configuration):
         'cassandra': {
             'ENGINE': 'django_cassandra_engine',
             'NAME': CASSANDRA_DB_NAME,
-            'TEST_NAME': "test_{}".format(CASSANDRA_DB_NAME),
+            'TEST': {
+                'NAME': "test_{}".format(CASSANDRA_DB_NAME)
+            },
             'HOST': CASSANDRA_DB_HOST,
             'USER': CASSANDRA_DB_USER,
             'PASSWORD': CASSANDRA_DB_PASSWORD,
             'OPTIONS': {
                 'replication': {
-                    'strategy_class': "SimpleStrategy",
-                    'replication_factor': 1
+                    'strategy_class': CASSANDRA_DB_STRATEGY,
+                    'replication_factor': CASSANDRA_DB_REPLICATION
                 },
                 'connection': {
                     'consistency': ConsistencyLevel.LOCAL_ONE,
@@ -358,7 +364,7 @@ class Common(Configuration):
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/1.8/howto/static-files/
-    STATIC_ROOT = os.path.join(BASE_DIR + '/static')
+    STATIC_ROOT = os.path.join(BASE_DIR + '/{{ project_name | lower }}/static')
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -441,6 +447,15 @@ class Common(Configuration):
             'anon': '100/day',
             'user': '60/minute'
         },
+
+        # The name of the alternative query string  be can use for authenticate
+        # users in each request
+        # Ex. http://mydomain.com/users/user/?auth_token=<token_key>"
+        'QUERY_STRING_AUTH_TOKEN': "auth_token",
+        # Do we want to log any access made to the API?
+        'LOG_ACCESSES': True,
+        # Use Django's standard `django.contrib.auth` permissions,
+        # or allow read-only access for unauthenticated users.
 
         'DEFAULT_AUTHENTICATION_CLASSES': (
             # 'rest_framework.authentication.BasicAuthentication',
@@ -629,11 +644,13 @@ class Development(Common):
     """
     DEBUG = os.getenv("DEBUG", "True") == "True"
 
+    TESTS_TMP_DIR = "/tmp/davinci/tests"
+
     ALLOWED_HOSTS = []
 
     INTERNAL_IPS = [
-            '127.0.0.1'
-        ]
+        '127.0.0.1'
+    ]
 
     INSTALLED_APPS = Common.INSTALLED_APPS + [
         'django_extensions', 'debug_toolbar'
@@ -642,6 +659,8 @@ class Development(Common):
     MIDDLEWARE = Common.MIDDLEWARE + [
         'debug_toolbar.middleware.DebugToolbarMiddleware'
     ]
+
+    Common.REST_FRAMEWORK['LOG_ACCESSES'] = False
 
 
 class Staging(Common):
@@ -656,7 +675,6 @@ class Staging(Common):
     # server
     CASSANDRA_DB_STRATEGY = os.getenv(
         "CASSANDRA_DB_STRATEGY", "NetworkTopologyStrategy")
-    CASSANDRA_DB_REPLICATION = os.getenv("CASSANDRA_DB_REPLICATION", 3)
 
     DATABASES = {
         'default': {
@@ -676,7 +694,7 @@ class Staging(Common):
             'OPTIONS': {
                 'replication': {
                     'strategy_class': CASSANDRA_DB_STRATEGY,
-                    'replication_factor': CASSANDRA_DB_REPLICATION
+                    'replication_factor': Common.CASSANDRA_DB_REPLICATION
 
                     # 'strategy_class': 'NetworkTopologyStrategy',
                     # 'datacenter1': N1,
@@ -717,4 +735,4 @@ class Production(Staging):
     """
     The in-production settings.
     """
-    pass
+    LOGGING_FILE = "/var/log/{{ project_name | lower }}-debug.log"
