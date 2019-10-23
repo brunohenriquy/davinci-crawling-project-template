@@ -31,6 +31,8 @@ from caravaggio_rest_api.users.api.views import \
 
 from caravaggio_rest_api.views import schema_view
 
+# from davinci_crawling.example.bovespa.urls import urlpatterns as bovespa_urls
+from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
 
 try:
     from davinci_crawling.example.bovespa.urls import \
@@ -40,9 +42,6 @@ except TypeError:
 
 urls.handler500 = 'rest_framework.exceptions.server_error'
 urls.handler400 = 'rest_framework.exceptions.bad_request'
-
-# from davinci_crawling.example.bovespa.urls import urlpatterns as bovespa_urls
-from {{ project_name | lower }}.api.urls import urlpatterns as {{ project_name | lower }}_urls
 
 urlpatterns = [
     # ## DO NOT TOUCH

@@ -11,10 +11,12 @@ from caravaggio_rest_api.haystack.indexes import BaseSearchIndex
 from {{ project_name | lower }} import CRAWLING_PROJECT_NAME
 from .models import {{ project_name | capfirst }}Resource
 
-_logger = logging.getLogger("davinci_{}.search_indexes".format(CRAWLING_PROJECT_NAME))
+_logger = logging.getLogger("davinci_{}.search_indexes".format(
+    CRAWLING_PROJECT_NAME))
 
 
-class {{ project_name | capfirst }}ResourceIndex(BaseSearchIndex, indexes.Indexable):
+class {{ project_name | capfirst }}ResourceIndex(
+        BaseSearchIndex, indexes.Indexable):
 
     id = indexes.CharField(
         model_attr="id")

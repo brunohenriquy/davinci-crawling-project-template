@@ -6,7 +6,7 @@ import shutil
 import sys
 from io import open
 
-from setuptools import find_packages, setup
+from setuptools import setup
 import traceback
 
 extra_params = {}
@@ -15,7 +15,8 @@ setup_requires = [
     'sphinxcontrib-inlinesyntaxhighlight==0.2']
 
 try:
-    from pip._internal import main
+    from pip._internal.main import main
+
     main(['install'] + setup_requires)
     setup_requires = []
 except Exception:
@@ -34,7 +35,8 @@ def get_version(package):
     init_py = open(os.path.join(package, '__init__.py')).read()
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
-from sphinx.setup_command import BuildDoc
+
+from sphinx.setup_command import BuildDoc  # nopep8
 
 cmdclass = {
     'docs': BuildDoc

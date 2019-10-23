@@ -237,7 +237,6 @@ class Common(Configuration):
     #    import pymysql
     #    pymysql.install_as_MySQLdb()
 
-
     # [START db_setup]
     DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
     DB_PORT = os.getenv("DB_PORT", "6543")
@@ -353,7 +352,8 @@ class Common(Configuration):
     # If you set this to False, Django will not use timezone-aware datetimes.
     USE_TZ = True
 
-    # Absolute filesystem path to the directory that will hold user-uploaded files.
+    # Absolute filesystem path to the directory that will hold user-uploaded
+    # files.
     # Example: "/home/media/media.lawrence.com/media/"
     MEDIA_ROOT = ''
 
@@ -398,13 +398,15 @@ class Common(Configuration):
     # production
     COMPRESS_ENABLED = os.getenv("COMPRESS_ENABLED", "False") == "True"
     # COMPRESS_OFFLINE:
-    #   - False: It needs a cache service to check if compress or not the assets
-    #   - True: No cache service needed but you have to compress the assets before.
-    #           Use `python manage.py compress` for compress the assets.
-    #           If you're going to serve the assets (compressed or not) with
-    #           Nginx you have to use `python manage.py collectstatic` for
-    #           collect and copy the assets in `./web/static/` which is mapped
-    #           in Nginx as statics folder.
+    #   - False: It needs a cache service to check if compress or not the
+    #   assets
+    #   - True: No cache service needed but you have to compress the assets
+    #   before.
+    #   Use `python manage.py compress` for compress the assets.
+    #   If you're going to serve the assets (compressed or not) with
+    #   Nginx you have to use `python manage.py collectstatic` for
+    #   collect and copy the assets in `./web/static/` which is mapped
+    #   in Nginx as statics folder.
     COMPRESS_OFFLINE = os.getenv("COMPRESS_OFFLINE", "False") == "True"
     COMPRESS_OFFLINE_CONTEXT = {
         'STATIC_URL': STATIC_URL
@@ -570,9 +572,9 @@ class Common(Configuration):
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": "redis://{0}{1}:{2}/1".format(
-                    ":{0}@".format(REDIS_PASS_PRIMARY)
-                    if REDIS_PASS_PRIMARY else "",
-                    REDIS_HOST_PRIMARY, REDIS_PORT_PRIMARY),
+                ":{0}@".format(REDIS_PASS_PRIMARY)
+                if REDIS_PASS_PRIMARY else "",
+                REDIS_HOST_PRIMARY, REDIS_PORT_PRIMARY),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             },
