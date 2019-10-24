@@ -52,13 +52,15 @@ crawler:
 
 ::
 
-    $ conda create -n myproject pip python=3.7
+    $ conda create -n myproject pip python=3.6
     $ conda activate myproject
 
     $ pip install django>=2
 
+    $ conda install -y gdal
+
     $ django-admin.py startproject \
-      --template=https://github.com/buildgroupai/davinci-crawling-project-template/archive/master.zip \
+      --template=https://github.com/buildgroupai/davinci-crawling-project-template/archive/develop.zip \
       --name=Dockerfile \
       --name=Makefile \
       --extension=py,md,env,sh,template,yamltemplate,ini,conf,json,cfg \
@@ -67,9 +69,12 @@ crawler:
     $ cd myproject/src
 
     $ python manage.py startapp \
-       --template=https://github.com/buildgroupai/davinci-crawling-app-template/archive/master.zip \
+       --template=https://github.com/buildgroupai/davinci-crawling-app-template/archive/develop.zip \
        --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
        mycrawler
+
+    # Returns to your project folder
+    $ cd ..
 
     $ python setup.py develop
 
@@ -87,8 +92,10 @@ Test crawler
 
 To test the crawler we will need to:
 
--  Add the crawler app to the list of INSTALLED\_APPS
--  Add the crawler urls to the project urls
+-  Add the crawler app to the list of INSTALLED\_APPS;
+-  Add some logging configuration on the settings.py;
+-  Add the statics files to the settings.py;
+-  Add the crawler urls to the project urls.
 
 If you want to test the Bovespa crawler too that comes with
 ``davinci-crawling``, you should edit the
@@ -100,34 +107,40 @@ application.
 
     # Application definition
     INSTALLED_APPS = [
-        'django_cassandra_engine',
-        'django_cassandra_engine.sessions',
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        # 'django.contrib.sessions',
-        'django.contrib.sites',
-        'django.contrib.messages',
-        'django.contrib.staticfiles',
-        # Uncomment the next line to enable the admin:
-        'django.contrib.admin',
-        # Uncomment the next line to enable admin documentation:
-        'django.contrib.admindocs',
-
-        'django_extensions',
-        'debug_toolbar',
-
-        'rest_framework',
-        'rest_framework.authtoken',
-        'rest_framework_cache',
-        'rest_framework_swagger',
-
-        'haystack',
-        'caravaggio_rest_api',
+        ...
         'davinci_crawling',
         'davinci_crawling.example.bovespa',
+    ]
+
+    INSTALLED_APPS += [
         'myproject',
         'mycrawler'
     ]
+
+Add now the logging configuration on the ``settings.py`` too.
+
+.. code-block:: python
+
+    'davinci_crawler_crawler_11': {
+        'handlers': ['console', 'mail_admins'],
+        'level': 'DEBUG',
+        'propagate': True,
+    },
+
+The last thing you need to do on ``settings.py`` is add the crawler staticfiles
+to the staticfiles on the project.
+
+.. code-block:: python
+    STATICFILES_DIRS = (
+        # Put strings here, like "/home/html/static" or "C:/www/django/static".
+        # Always use forward slashes, even on Windows.
+        # Don't forget to use absolute paths, not relative paths.
+        os.path.join(BASE_DIR + '/crawler_one/static'),
+
+        # Your crawler static files go here
+        os.path.join(BASE_DIR + '/crawler_11/static'),
+        os.path.join(BASE_DIR + '/crawler_12/static'),
+    )
 
 And now we can update the ``myproject.urls.py`` file as shown here:
 
