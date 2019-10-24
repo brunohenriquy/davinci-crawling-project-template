@@ -29,6 +29,8 @@ beta_settings:
 env_variables:
   SECRET_KEY: [SECRET_KEY]
 
+  ENVIRONMENT="production"
+
   STATIC_URL: https://storage.googleapis.com/static-{{ project_name | lower }}-${GAE_VERSION}/static/
 
   DEBUG: False
@@ -39,7 +41,7 @@ env_variables:
   SECURE_SSL_REDIRECT: True
 
   SITE_SCHEMA: https
-  SITE_DOMAIN: preseries.com
+  SITE_DOMAIN: buildgroupai.com
 
   GOOGLE_ANALYTICS_ID: [ID]
 
@@ -65,6 +67,8 @@ env_variables:
 
   EMAIL_HOST_USER: [EMAIL_USER]
   EMAIL_HOST_PASSWORD: [EMAIL_PASSWORD]
+
+  PROJECT_DOCKER_IMAGE: ${DOCKER_IMAGE}
 
 # Google App Engine limits application deployments to 10,000 uploaded files per
 # version. The skip_files section allows us to skip virtual environment files
