@@ -77,6 +77,10 @@ crawler:
     $ cd ..
 
     $ python setup.py develop
+    $ pip install django_davinci_crawling[spatial]
+    $ pip install -r requirements_test.base.txt
+    $ sudo mkdir -p /data/crawler_one/log
+    $ sudo chown -R `whoami`:staff /data/crawler_one
 
 **NOTE**: by default we are using the ``dse-driver`` to connect to
 cassandra or DataStax Enterprise. If you want to use
