@@ -8,8 +8,8 @@ PAPER         =
 BUILDDIR      = ../build/sphinx/
 AUTODOCDIR    = api
 AUTODOCBUILD  = sphinx-apidoc
-PROJECT       = crawler_test
-MODULEDIR     = ../crawler_test
+PROJECT       = {{ project_name | lower }}
+MODULEDIR     = ../src/{{ project_name | lower }}
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $?), 1)
