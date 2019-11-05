@@ -10,6 +10,6 @@ class DaVinciCrawlerConfig(AppConfig):
     verbose_name = "Django DaVinci Crawler {{ project_name }}"
 
     def ready(self):
-        pass
+        from {{project_name | lower}}.api import serializers
         # Add System checks
         # from .checks import pagination_system_check  # NOQA
