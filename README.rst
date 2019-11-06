@@ -63,14 +63,14 @@ crawler:
       --template=https://github.com/buildgroupai/davinci-crawling-project-template/archive/develop.zip \
       --name=Dockerfile \
       --name=Makefile \
-      --extension=py,md,env,sh,template,yamltemplate,ini,conf,json,cfg \
+      --extension=py,md,env,sh,template,yamltemplate,ini,conf,json,cfg,rst \
       myproject
 
     $ cd myproject/src
 
     $ python manage.py startapp \
        --template=https://github.com/buildgroupai/davinci-crawling-app-template/archive/develop.zip \
-       --extension=py,md,env,sh,template,yamltemplate,ini,conf,json \
+       --extension=py,md,env,sh,template,yamltemplate,ini,conf,json,rst \
        mycrawler
 
     # Returns to your project folder
