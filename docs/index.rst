@@ -1,8 +1,8 @@
 =====
-myapp
+{{ project_name | capfirst }}
 =====
 
-This is the documentation of **myapp**.
+This is the documentation of **{{ project_name | capfirst }}**.
 
 .. note::
 

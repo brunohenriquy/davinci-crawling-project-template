@@ -27,6 +27,27 @@ class {{ project_name | capfirst }}ResourceSerializerV1(
                   "name", "short_description", "long_description")
         read_only_fields = ("_id", "created_at", "updated_at")
 
+        extra_kwargs = {
+            'id': {
+                'help_text': 'the id that is the unique partition key.'
+            },
+            'created_at': {
+                'help_text': 'the date of the creation of the object.'
+            },
+            'updated_at': {
+                'help_text': 'the date that we last updated the object.'
+            },
+            'name': {
+                'help_text': 'the name of the object.'
+            },
+            'short_description': {
+                'help_text': 'a short description of the object.'
+            },
+            'long_description': {
+                'help_text': 'a long description of the object'
+            },
+        }
+
 
 # Cache configuration
 cache_registry.register({{ project_name | capfirst }}ResourceSerializerV1)
