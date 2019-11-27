@@ -440,12 +440,6 @@ class Common(Configuration):
         'DEFAULT_PAGINATION_CLASS':
             'rest_framework.pagination.PageNumberPagination',
 
-        'DEFAULT_THROTTLE_CLASSES': (
-            'rest_framework.throttling.AnonRateThrottle',
-            'rest_framework.throttling.UserRateThrottle',
-            'rest_framework.throttling.ScopedRateThrottle'
-        ),
-
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '60/minute'
@@ -491,6 +485,39 @@ class Common(Configuration):
             'caravaggio_rest_api.drf.exceptions.caravaggio_exception_handler'
     }
 
+    # Enable/Disable throttling
+    THROTTLE_ENABLED = os.getenv("THROTTLE_ENABLED", "False") == "True"
+
+    if THROTTLE_ENABLED:
+        REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = (
+            'rest_framework.throttling.AnonRateThrottle',
+            'rest_framework.throttling.UserRateThrottle',
+            'rest_framework.throttling.ScopedRateThrottle'
+        )
+
+    GET_THROTTLE_RATE = "6000/minute"
+    LIST_THROTTLE_RATE = "200/minute"
+    POST_THROTTLE_RATE = "100/minute"
+    PUT_THROTTLE_RATE = "100/minute"
+    DELETE_THROTTLE_RATE = "60/minute"
+    VALIDATE_THROTTLE_RATE = "60/minute"
+    PATCH_THROTTLE_RATE = "100/minute"
+    METADATA_THROTTLE_RATE = "6000/minute"
+    FACETS_THROTTLE_RATE = "6000/minute"
+
+    THROTTLE_OPERATIONS = {
+        'retrieve': GET_THROTTLE_RATE,
+        'highlight': GET_THROTTLE_RATE,
+        'list': LIST_THROTTLE_RATE,
+        'create': POST_THROTTLE_RATE,
+        'update': PUT_THROTTLE_RATE,
+        'destroy': DELETE_THROTTLE_RATE,
+        'validate': VALIDATE_THROTTLE_RATE,
+        'partial_update': PATCH_THROTTLE_RATE,
+        'metadata': METADATA_THROTTLE_RATE,
+        'facets': FACETS_THROTTLE_RATE
+    }
+
     ACCOUNT_USER_MODEL_USERNAME_FIELD = None
     ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
@@ -515,32 +542,6 @@ class Common(Configuration):
 
     SESSION_ENGINE = 'django_cassandra_engine.sessions.backends.db'
     CASSANDRA_FALLBACK_ORDER_BY_PYTHON = True
-
-    # Enable/Disable throttling
-    THROTTLE_ENABLED = os.getenv("THROTTLE_ENABLED", "False") == "True"
-
-    GET_THROTTLE_RATE = "6000/minute"
-    LIST_THROTTLE_RATE = "200/minute"
-    POST_THROTTLE_RATE = "100/minute"
-    PUT_THROTTLE_RATE = "100/minute"
-    DELETE_THROTTLE_RATE = "60/minute"
-    VALIDATE_THROTTLE_RATE = "60/minute"
-    PATCH_THROTTLE_RATE = "100/minute"
-    METADATA_THROTTLE_RATE = "6000/minute"
-    FACETS_THROTTLE_RATE = "6000/minute"
-
-    THROTTLE_OPERATIONS = {
-        'retrieve': GET_THROTTLE_RATE,
-        'highlight': GET_THROTTLE_RATE,
-        'list': LIST_THROTTLE_RATE,
-        'create': POST_THROTTLE_RATE,
-        'update': PUT_THROTTLE_RATE,
-        'destroy': DELETE_THROTTLE_RATE,
-        'validate': VALIDATE_THROTTLE_RATE,
-        'partial_update': PATCH_THROTTLE_RATE,
-        'metadata': METADATA_THROTTLE_RATE,
-        'facets': FACETS_THROTTLE_RATE
-    }
 
     HAYSTACK_DJANGO_ID_FIELD = "id"
 
