@@ -90,6 +90,7 @@ class Common(Configuration):
         'caravaggio_rest_api.logging',
         'caravaggio_rest_api.users',
         'davinci_crawling',
+        'davinci_crawling.task',
 
         '{{ project_name | lower }}'
     ]
@@ -153,6 +154,50 @@ class Common(Configuration):
         LOGGING_FILE = os.getenv("LOGGING_FILE",
                                  "/data/{{ project_name | lower }}/"
                                  "log/{{ project_name | lower }}.log")
+
+    LOGGING_DIR = "/".join(LOGGING_FILE.split("/")[:-1])
+
+    CHROMIUM_BIN_FILE = os.getenv("CHROMIUM_BIN_FILE",
+                                  "/Applications/Chromium.app/Contents"
+                                  "/MacOS/Chromium")
+
+    DAVINCI_CONF = {
+        "crawler-params": {
+            "default": {
+                "verbosity": 1,
+                "no_color": False,
+                "force_color": False,
+                "local_dir": "fs://%s/log/local" % LOGGING_DIR,
+                "cache_dir": "fs://%s/log/cache" % LOGGING_DIR,
+                "workers_num": 10,
+                'chromium_bin_file': CHROMIUM_BIN_FILE,
+                'io_gs_project': 'centering-badge-212119',
+            }
+        },
+        "architecture-params": {
+            "throttle": {
+                "implementation": "davinci_crawling.throttle.memory_throttle."
+                                  "MemoryThrottle"
+            },
+            "proxy": {
+                # to change proxy usage add the implementation key
+                "proxy_mesh": {
+                    "authentication":
+                        "Basic aWFucmlja2V5OlZhcmlhYmxlZGF0YTEwMSE=",
+                    "authorized_proxies_url":
+                        "https://proxymesh.com/api/proxies/"
+                },
+                "proxies-availability-checker": {
+                    "elapse-time-between-checks": 60
+                }
+            },
+            "parallelism": {
+                "multiproc": {
+                    "default_num_workers": 10
+                }
+            }
+        }
+    }
 
     LOGGING = {
         'version': 1,
