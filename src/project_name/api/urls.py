@@ -19,11 +19,11 @@ from django.conf.urls import url, include
 from {{ project_name | lower }}.api.views import \
     {{ project_name | capfirst }}ResourceViewSet
 
-from rest_framework import routers
+from caravaggio_rest_api.drf.routers import CaravaggioRouter
 
 # API v1 Router. Provide an easy way of automatically determining the URL conf.
 
-api_CRAWLER_PROJECT = routers.DefaultRouter()
+api_CRAWLER_PROJECT = CaravaggioRouter()
 
 api_CRAWLER_PROJECT.register(r'{{ project_name | lower }}resource',
                              {{ project_name | capfirst }}ResourceViewSet,
