@@ -55,7 +55,7 @@ if sys.argv[-1] == 'publish':
     print("  git push --tags")
     shutil.rmtree('dist')
     shutil.rmtree('build')
-    shutil.rmtree('davinci-crawling-{{ project_name | lower }}.egg-info')
+    shutil.rmtree('{{ project_name | lower }}.egg-info')
     sys.exit()
 
 setup(
@@ -64,7 +64,7 @@ setup(
     command_options={
         'docs': {
             'project': ('setup.py',
-                        'davinci-crawling-{{ project_name | lower }}'),
+                        '{{ project_name | lower }}'),
             'version': ('setup.py', version),
             'release': ('setup.py', version),
             'source_dir': ('setup.py', 'docs'),

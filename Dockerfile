@@ -1,5 +1,5 @@
 FROM gcr.io/google-appengine/python
-LABEL name="davinci-crawling-{{ project_name | lower }}" \
+LABEL name="{{ project_name | lower }}" \
       crawling_vendor="BuildGroup Data Services, Inc." \
       maintainer="Javier Alperte <xalperte@buildgroupai.com>" \
       # We need the Python 3.6 environment \
