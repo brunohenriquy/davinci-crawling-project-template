@@ -14,10 +14,10 @@ Features
 --------
 
 -  `Caravaggio REST API
-   Framework <https://github.com/buildgroupai/django-caravaggio-rest-api>`__
+   Framework <https://github.com/intellstartup/django-caravaggio-rest-api>`__
    (Django 2.0+, DRF, DataStax/Cassandra)
 -  `DaVinci Crawling
-   Framwework <https://github.com/buildgroupai/django-davinci-crawling>`__
+   Framwework <https://github.com/intellstartup/django-davinci-crawling>`__
 -  PostgreSQL database support with psycopg2.
 -  DataStax database support with DSE Driver
 -  Get value insight and debug information while on Development with
@@ -39,7 +39,7 @@ We need to install, configure and start the following services:
 -  Redis 3
 
 To do that we can follow the instructions
-`here <https://github.com/buildgroupai/django-caravaggio-rest-api/blob/master/docs/local_environment.md>`__.
+`here <https://github.com/intellstartup/django-caravaggio-rest-api/blob/master/docs/local_environment.md>`__.
 
 Once the previous services are ready, we can proceed with the
 installation.
@@ -60,7 +60,7 @@ crawler:
     $ conda install -y gdal
 
     $ django-admin.py startproject \
-      --template=https://github.com/buildgroupai/davinci-crawling-project-template/archive/develop.zip \
+      --template=https://github.com/intellstartup/davinci-crawling-project-template/archive/develop.zip \
       --name=Dockerfile \
       --name=Makefile \
       --extension=py,md,env,sh,template,yamltemplate,ini,conf,json,cfg,rst,Dockerfile \
@@ -69,7 +69,7 @@ crawler:
     $ cd myproject/src
 
     $ python manage.py startapp \
-       --template=https://github.com/buildgroupai/davinci-crawling-app-template/archive/develop.zip \
+       --template=https://github.com/intellstartup/davinci-crawling-app-template/archive/develop.zip \
        --extension=py,md,env,sh,template,yamltemplate,ini,conf,json,rst,Dockerfile \
        mycrawler
 
@@ -171,7 +171,7 @@ Setup the databases
 ~~~~~~~~~~~~~~~~~~~
 
 Follow the instructions
-`here <https://github.com/buildgroupai/django-caravaggio-rest-api/blob/master/docs/local_environment.md>`__
+`here <https://github.com/intellstartup/django-caravaggio-rest-api/blob/master/docs/local_environment.md>`__
 to prepare your backend for development.
 
 In this step we are going to populate the databases and its tables. The
